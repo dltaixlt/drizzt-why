@@ -1,0 +1,339 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>drizzt的十万个为什么</title>
+    <style>
+        :root {
+            --bg: #faf9f6;
+            --card: #ffffff;
+            --text: #1a1a2e;
+            --text-secondary: #555;
+            --accent: #e85d3a;
+            --accent-light: #fdf0ed;
+            --border: #e8e6e1;
+            --tag-bg: #f0eef4;
+            --shadow: 0 2px 12px rgba(0,0,0,0.06);
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            line-height: 1.7;
+            padding: 0;
+        }
+
+        /* Header */
+        .header {
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+            color: white;
+            padding: 60px 24px 40px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+        .header::before {
+            content: "? ? ? ? ?";
+            position: absolute;
+            top: -20px;
+            left: 0;
+            right: 0;
+            font-size: 120px;
+            opacity: 0.06;
+            letter-spacing: 40px;
+            line-height: 1;
+            pointer-events: none;
+        }
+        .header h1 {
+            font-size: 2.4rem;
+            font-weight: 800;
+            letter-spacing: 2px;
+            position: relative;
+        }
+        .header h1 .emoji {
+            font-size: 2.8rem;
+        }
+        .header p {
+            margin-top: 12px;
+            font-size: 1.05rem;
+            opacity: 0.8;
+            max-width: 500px;
+            margin-left: auto;
+            margin-right: auto;
+            position: relative;
+        }
+        .header .subtitle {
+            margin-top: 8px;
+            font-size: 0.9rem;
+            opacity: 0.55;
+        }
+
+        /* Stats bar */
+        .stats-bar {
+            display: flex;
+            justify-content: center;
+            gap: 40px;
+            padding: 16px 24px;
+            background: white;
+            border-bottom: 1px solid var(--border);
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+        }
+        .stats-bar .stat {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .stats-bar .stat strong {
+            color: var(--accent);
+            font-size: 1.1rem;
+        }
+
+        /* Main content */
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 32px 20px 80px;
+        }
+
+        /* Question card */
+        .question-card {
+            background: var(--card);
+            border-radius: 16px;
+            box-shadow: var(--shadow);
+            overflow: hidden;
+            margin-bottom: 32px;
+            border: 1px solid var(--border);
+        }
+
+        .question-card .card-header {
+            padding: 24px 28px 16px;
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+        }
+        .question-card .card-header .q-number {
+            background: var(--accent);
+            color: white;
+            border-radius: 50%;
+            width: 32px;
+            height: 32px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.85rem;
+            font-weight: 700;
+            flex-shrink: 0;
+            margin-top: 2px;
+        }
+        .question-card .card-header .q-text {
+            font-size: 1.25rem;
+            font-weight: 700;
+            line-height: 1.5;
+        }
+        .question-card .card-header .q-text .q-mark {
+            color: var(--accent);
+        }
+
+        .question-card .card-meta {
+            padding: 0 28px 12px;
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+        .question-card .card-meta .tag {
+            font-size: 0.75rem;
+            padding: 2px 10px;
+            border-radius: 20px;
+            background: var(--tag-bg);
+            color: var(--text-secondary);
+        }
+        .question-card .card-meta .tag.date {
+            background: var(--accent-light);
+            color: var(--accent);
+        }
+
+        .question-card .card-image {
+            width: 100%;
+            border-top: 1px solid var(--border);
+            border-bottom: 1px solid var(--border);
+        }
+        .question-card .card-image img {
+            width: 100%;
+            display: block;
+        }
+
+        .question-card .card-body {
+            padding: 24px 28px 28px;
+        }
+        .question-card .card-body p {
+            margin-bottom: 14px;
+            font-size: 0.97rem;
+            color: #333;
+        }
+        .question-card .card-body p:last-child {
+            margin-bottom: 0;
+        }
+        .question-card .card-body .highlight {
+            background: #fff8e1;
+            padding: 12px 16px;
+            border-radius: 10px;
+            border-left: 4px solid #f5a623;
+            margin: 16px 0;
+            font-size: 0.92rem;
+        }
+        .question-card .card-body .highlight strong {
+            color: #d48a00;
+        }
+
+        /* Empty state */
+        .empty-state {
+            text-align: center;
+            padding: 80px 20px;
+            color: var(--text-secondary);
+        }
+        .empty-state .big-icon {
+            font-size: 4rem;
+            margin-bottom: 20px;
+        }
+        .empty-state h2 {
+            font-size: 1.4rem;
+            margin-bottom: 10px;
+            color: var(--text);
+        }
+        .empty-state p {
+            max-width: 400px;
+            margin: 0 auto;
+        }
+
+        /* Footer */
+        .footer {
+            text-align: center;
+            padding: 32px 20px;
+            color: var(--text-secondary);
+            font-size: 0.85rem;
+            border-top: 1px solid var(--border);
+        }
+        .footer a {
+            color: var(--accent);
+            text-decoration: none;
+        }
+
+        /* Responsive */
+        @media (max-width: 600px) {
+            .header h1 { font-size: 1.7rem; }
+            .header { padding: 40px 16px 28px; }
+            .stats-bar { gap: 16px; flex-wrap: wrap; font-size: 0.8rem; }
+            .question-card .card-header { padding: 18px 18px 12px; }
+            .question-card .card-header .q-text { font-size: 1.1rem; }
+            .question-card .card-body { padding: 18px; }
+            .question-card .card-meta { padding: 0 18px 8px; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Header -->
+    <div class="header">
+        <h1><span class="emoji">🔍</span> drizzt的十万个为什么</h1>
+        <p>每天一个日常生活中的小问题，用简单的话讲清楚</p>
+        <div class="subtitle">好奇心是最好的老师 ✨</div>
+    </div>
+
+    <!-- Stats -->
+    <div class="stats-bar">
+        <div class="stat">📅 始于 <strong>2026.06.12</strong></div>
+        <div class="stat">❓ 已解答 <strong id="totalCount">1</strong> 个问题</div>
+        <div class="stat">📖 持续更新中</div>
+    </div>
+
+    <!-- Content -->
+    <div class="container" id="questionList">
+        <!-- Questions will be rendered here by JavaScript -->
+    </div>
+
+    <!-- Footer -->
+    <div class="footer">
+        <p>由 🦞 OpenClaw AI 助手 · drizzt 的好奇心驱动</p>
+        <p style="margin-top:4px;">每天更新，欢迎收藏 📌</p>
+    </div>
+
+    <script>
+        // ============================================================
+        // 数据存储：所有问题都写在这里
+        // 新增问题：在 questions 数组最前面 push 一条新记录即可
+        // ============================================================
+        const questions = [
+            {
+                id: 1,
+                date: "2026-06-12",
+                question: "塔吊是怎么立起来的？",
+                tags: ["建筑", "工程", "日常"],
+                image: "tower-crane-how---983333d4-d6bb-4bd1-8064-cfe0624fb05a.png",
+                content: `
+                    <p>塔吊（塔式起重机）是工地上最高的设备之一，但它不是一开始就那么高的。它的"长高"方式非常巧妙——<strong>自己把自己举起来</strong>。</p>
+                    <p><strong>第一步：打地基 + 组装核心</strong><br>
+                    先用一辆小型的汽车吊，把塔吊的底架和几节标准节（塔身的基本单元）吊到预先打好的混凝土基础上固定好。同时装上液压顶升套架——这是塔吊"长高"的关键工具。</p>
+                    <p><strong>第二步：装好起重臂和平衡臂</strong><br>
+                    在地面先把长长的起重臂（吊东西的那根）和平衡臂（后面挂配重的）组装好，再用汽车吊把它们吊到塔身顶部安装。这时候塔吊已经可以用了，但还比较矮。</p>
+                    <p><strong>第三步：自己"爬高"（自升节）</strong><br>
+                    这是最精彩的一步。塔吊用液压顶升套架把自己顶起来，在塔身和驾驶室之间腾出一个空位，然后把新的标准节从地面吊上来、塞进这个空位里。每塞一节，塔吊就长高几米。重复这个过程，塔吊就能长到上百米高。</p>
+                    <p><strong>第四步：完工</strong><br>
+                    长到需要的高度后，塔吊就可以正常工作了。拆的时候是反过来的——一边拆标准节一边把自己降下来。</p>
+                    <div class="highlight">
+                        <strong>💡 一句话总结：</strong>塔吊不是被吊上去的，而是用液压千斤顶把自己一节一节"顶"上去的，就像自己拎着自己的鞋带把自己提起来。
+                    </div>
+                `
+            }
+        ];
+
+        // Render
+        function render() {
+            const container = document.getElementById('questionList');
+            document.getElementById('totalCount').textContent = questions.length;
+
+            if (questions.length === 0) {
+                container.innerHTML = `
+                    <div class="empty-state">
+                        <div class="big-icon">🔍</div>
+                        <h2>还没有问题</h2>
+                        <p>drizzt 正在酝酿今天的问题……<br>很快就会有第一个"为什么"啦！</p>
+                    </div>
+                `;
+                return;
+            }
+
+            let html = '';
+            questions.forEach(q => {
+                html += `
+                    <div class="question-card" id="q-${q.id}">
+                        <div class="card-header">
+                            <div class="q-number">#${q.id}</div>
+                            <div class="q-text"><span class="q-mark">❓</span> ${q.question}</div>
+                        </div>
+                        <div class="card-meta">
+                            <span class="tag date">📅 ${q.date}</span>
+                            ${q.tags.map(t => `<span class="tag">🏷️ ${t}</span>`).join('')}
+                        </div>
+                        <div class="card-image">
+                            <img src="${q.image}" alt="${q.question}">
+                        </div>
+                        <div class="card-body">
+                            ${q.content}
+                        </div>
+                    </div>
+                `;
+            });
+
+            container.innerHTML = html;
+        }
+
+        render();
+    </script>
+
+</body>
+</html>
