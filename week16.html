@@ -1,0 +1,459 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>四年级语数英 · 第16周学习目标</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif;
+      background: #f5f7fa;
+      color: #333;
+      padding: 20px;
+    }
+    .container {
+      max-width: 1000px;
+      margin: 0 auto;
+    }
+
+    /* Header */
+    .header {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      border-radius: 16px;
+      padding: 32px 36px;
+      color: #fff;
+      margin-bottom: 24px;
+    }
+    .header h1 {
+      font-size: 26px;
+      font-weight: 700;
+      margin-bottom: 6px;
+    }
+    .header .subtitle {
+      font-size: 15px;
+      opacity: 0.9;
+    }
+    .header .date {
+      margin-top: 10px;
+      font-size: 14px;
+      opacity: 0.8;
+    }
+
+    /* Subject tabs */
+    .tabs {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 20px;
+      flex-wrap: wrap;
+    }
+    .tab-btn {
+      padding: 10px 24px;
+      border: none;
+      border-radius: 10px;
+      font-size: 15px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+      background: #e8eaf6;
+      color: #5c6bc0;
+    }
+    .tab-btn:hover { background: #c5cae9; }
+    .tab-btn.active {
+      background: #5c6bc0;
+      color: #fff;
+      box-shadow: 0 4px 12px rgba(92,107,192,0.3);
+    }
+
+    /* Subject sections */
+    .subject-section { display: none; }
+    .subject-section.active { display: block; }
+
+    /* Day cards */
+    .day-cards {
+      display: grid;
+      gap: 16px;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    }
+    .day-card {
+      background: #fff;
+      border-radius: 14px;
+      padding: 20px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+      border-top: 4px solid #5c6bc0;
+    }
+    .day-card .day {
+      font-size: 13px;
+      color: #999;
+      margin-bottom: 4px;
+    }
+    .day-card .date {
+      font-size: 18px;
+      font-weight: 700;
+      color: #333;
+      margin-bottom: 12px;
+    }
+    .day-card .content-label {
+      font-size: 12px;
+      color: #5c6bc0;
+      font-weight: 600;
+      margin-bottom: 4px;
+    }
+    .day-card .content {
+      font-size: 14px;
+      color: #555;
+      line-height: 1.6;
+      margin-bottom: 10px;
+    }
+    .day-card .goals {
+      font-size: 13px;
+      color: #666;
+      line-height: 1.6;
+      padding-left: 14px;
+    }
+    .day-card .goals li { margin-bottom: 4px; }
+    .day-card .homework {
+      margin-top: 10px;
+      padding-top: 10px;
+      border-top: 1px dashed #eee;
+      font-size: 13px;
+      color: #e65100;
+    }
+    .day-card .homework strong { color: #e65100; }
+
+    /* Holiday badge */
+    .holiday-card {
+      background: #fff3e0;
+      border-top-color: #ff9800;
+    }
+    .holiday-card .date { color: #e65100; }
+    .holiday-badge {
+      display: inline-block;
+      background: #ff9800;
+      color: #fff;
+      padding: 4px 14px;
+      border-radius: 20px;
+      font-size: 14px;
+      font-weight: 600;
+    }
+
+    /* English vocab section */
+    .vocab-section {
+      background: #fff;
+      border-radius: 14px;
+      padding: 20px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+      margin-top: 16px;
+    }
+    .vocab-section h3 {
+      font-size: 16px;
+      color: #5c6bc0;
+      margin-bottom: 12px;
+    }
+    .vocab-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 8px;
+    }
+    .vocab-item {
+      background: #f5f7fa;
+      padding: 10px 14px;
+      border-radius: 8px;
+      font-size: 14px;
+      color: #444;
+    }
+    .vocab-item .en { font-weight: 600; color: #333; }
+    .vocab-item .cn { color: #888; font-size: 12px; margin-left: 6px; }
+
+    .sentence-box {
+      background: #e8f5e9;
+      padding: 14px 18px;
+      border-radius: 10px;
+      margin-top: 12px;
+      font-size: 14px;
+      line-height: 1.8;
+      color: #2e7d32;
+    }
+    .dictation-note {
+      background: #fff8e1;
+      padding: 12px 16px;
+      border-radius: 10px;
+      margin-top: 12px;
+      font-size: 13px;
+      color: #f57f17;
+    }
+
+    /* Footer */
+    .footer {
+      text-align: center;
+      margin-top: 32px;
+      padding: 20px;
+      color: #999;
+      font-size: 13px;
+    }
+    .footer a { color: #5c6bc0; text-decoration: none; }
+
+    @media (max-width: 600px) {
+      body { padding: 12px; }
+      .header { padding: 24px 20px; }
+      .header h1 { font-size: 20px; }
+      .day-cards { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+<div class="container">
+
+  <!-- Header -->
+  <div class="header">
+    <h1>📚 四年级语数英 · 第16周学习目标</h1>
+    <div class="subtitle">2026.06.15（周一）— 06.19（周五）</div>
+    <div class="date">🏫 深圳 · 四年级</div>
+  </div>
+
+  <!-- Tabs -->
+  <div class="tabs">
+    <button class="tab-btn active" onclick="switchTab('chinese')">📖 语文</button>
+    <button class="tab-btn" onclick="switchTab('math')">🔢 数学</button>
+    <button class="tab-btn" onclick="switchTab('english')">🇬🇧 英语</button>
+  </div>
+
+  <!-- ========== 语文 ========== -->
+  <div id="chinese" class="subject-section active">
+    <div class="day-cards">
+
+      <div class="day-card">
+        <div class="day">周一</div>
+        <div class="date">06.15</div>
+        <div class="content-label">📖 学习内容</div>
+        <div class="content">课文26《宝葫芦的秘密》</div>
+        <div class="content-label">🎯 学习目标</div>
+        <ul class="goals">
+          <li>认识"妖、矩"等生字，读准多音字"冲"，会写"介、绍"等15个汉字</li>
+          <li>读懂故事内容，能说出王葆想得到宝葫芦的原因</li>
+        </ul>
+        <div class="homework"><strong>📝 作业：</strong>《写字》L26 · 默写单</div>
+      </div>
+
+      <div class="day-card">
+        <div class="day">周二</div>
+        <div class="date">06.16</div>
+        <div class="content-label">📖 学习内容</div>
+        <div class="content">课文26《宝葫芦的秘密》</div>
+        <div class="content-label">🎯 学习目标</div>
+        <ul class="goals">
+          <li>能感受故事的奇妙和王葆的形象</li>
+          <li>能根据课文已有内容创编故事，讲给同学听</li>
+        </ul>
+        <div class="homework"><strong>📝 作业：</strong>续写故事 · 练习单 · 阅读《宝葫芦的秘密》</div>
+      </div>
+
+      <div class="day-card">
+        <div class="day">周三</div>
+        <div class="date">06.17</div>
+        <div class="content-label">📖 学习内容</div>
+        <div class="content">课文27《巨人的花园》</div>
+        <div class="content-label">🎯 学习目标</div>
+        <ul class="goals">
+          <li>认识"硕、允"等生字，会写"硕、允"等生字及"柔嫩、丰硕"等词语</li>
+          <li>边读边想象花园奇幻的景象</li>
+          <li>能说出花园发生的变化和巨人的转变</li>
+        </ul>
+        <div class="homework"><strong>📝 作业：</strong>《写字》L27 · 默写单</div>
+      </div>
+
+      <div class="day-card">
+        <div class="day">周四</div>
+        <div class="date">06.18</div>
+        <div class="content-label">📖 学习内容</div>
+        <div class="content">课文27《巨人的花园》</div>
+        <div class="content-label">🎯 学习目标</div>
+        <ul class="goals">
+          <li>能体会巨人由冷漠、孤独到和善、无私的转变</li>
+          <li>能发挥想象，把孩子们在巨人的花园里一起玩耍的情景写下来</li>
+        </ul>
+        <div class="homework"><strong>📝 作业：</strong>练习单 · 预习课文L28 · 阅读《宝葫芦的秘密》</div>
+      </div>
+
+    </div>
+
+    <div style="background:#fff;border-radius:14px;padding:16px 20px;margin-top:16px;box-shadow:0 2px 8px rgba(0,0,0,0.06);font-size:14px;color:#666;line-height:1.8;">
+      <strong>📌 本周提醒：</strong>第八单元词语 · 周四第二次基础测 · 本月推荐阅读《宝葫芦的秘密》，每天≥30分钟
+    </div>
+  </div>
+
+  <!-- ========== 数学 ========== -->
+  <div id="math" class="subject-section">
+    <div class="day-cards">
+
+      <div class="day-card">
+        <div class="day">周一</div>
+        <div class="date">06.15</div>
+        <div class="content-label">📖 学习内容</div>
+        <div class="content">练习六</div>
+        <div class="content-label">🎯 学习目标</div>
+        <ul class="goals">
+          <li>进一步理解条形统计图、象形统计图、折线统计图的特点</li>
+          <li>会规范画条形统计图</li>
+          <li>能够分析图表中的数据信息</li>
+        </ul>
+        <div class="homework"><strong>📝 作业：</strong>知训P81-82 · 每日一练（7）</div>
+      </div>
+
+      <div class="day-card">
+        <div class="day">周二</div>
+        <div class="date">06.16</div>
+        <div class="content-label">📖 学习内容</div>
+        <div class="content">第六单元限时练习</div>
+        <div class="content-label">🎯 学习目标</div>
+        <ul class="goals">
+          <li>检测第六单元《数据表示与分析》的掌握情况</li>
+          <li>能够正确订正错题</li>
+        </ul>
+        <div class="homework"><strong>📝 作业：</strong>每日一练（8）</div>
+      </div>
+
+      <div class="day-card">
+        <div class="day">周三</div>
+        <div class="date">06.17</div>
+        <div class="content-label">📖 学习内容</div>
+        <div class="content">限时练习讲评</div>
+        <div class="content-label">🎯 学习目标</div>
+        <ul class="goals">
+          <li>订正试卷，查漏补缺</li>
+        </ul>
+        <div class="homework"><strong>📝 作业：</strong>订正试卷，家长签字 · 每日一练（9）</div>
+      </div>
+
+      <div class="day-card">
+        <div class="day">周四</div>
+        <div class="date">06.18</div>
+        <div class="content-label">📖 学习内容</div>
+        <div class="content">数与代数专项复习</div>
+        <div class="content-label">🎯 学习目标</div>
+        <ul class="goals">
+          <li>梳理小数的意义、大小比较、小数加减乘算理等知识点，建立知识网络</li>
+          <li>能够应用所学解决实际问题</li>
+        </ul>
+        <div class="homework"><strong>📝 作业：</strong>每日一练（10、11、12）</div>
+      </div>
+
+      <div class="day-card holiday-card">
+        <div class="day">周五</div>
+        <div class="date">06.19</div>
+        <div class="holiday-badge">🎉 端午节放假</div>
+      </div>
+
+    </div>
+
+    <div style="background:#fff;border-radius:14px;padding:16px 20px;margin-top:16px;box-shadow:0 2px 8px rgba(0,0,0,0.06);font-size:14px;color:#666;line-height:1.8;">
+      <strong>📌 课前准备：</strong>草稿本、文具、课本
+    </div>
+  </div>
+
+  <!-- ========== 英语 ========== -->
+  <div id="english" class="subject-section">
+    <div class="day-cards">
+
+      <div class="day-card">
+        <div class="day">周一</div>
+        <div class="date">06.15</div>
+        <div class="content-label">📖 学习内容</div>
+        <div class="content">Ch6 语篇课1</div>
+        <div class="content-label">🎯 学习目标</div>
+        <ul class="goals">
+          <li>朗读课文，了解文章大意，掌握关键词句和语法点</li>
+          <li>精读课文，使用阅读策略进行信息定位、提取、推断和预测</li>
+          <li>初步学习设计英文菜单</li>
+        </ul>
+        <div class="homework"><strong>📝 作业：</strong>跟读PartC两次 · 阅读单</div>
+      </div>
+
+      <div class="day-card">
+        <div class="day">周二</div>
+        <div class="date">06.16</div>
+        <div class="content-label">📖 学习内容</div>
+        <div class="content">Ch6 语篇课1（续）</div>
+        <div class="homework"><strong>📝 作业：</strong>独立朗读PartC · 设计自己的菜单</div>
+      </div>
+
+      <div class="day-card">
+        <div class="day">周三</div>
+        <div class="date">06.17</div>
+        <div class="content-label">📖 学习内容</div>
+        <div class="content">Ch6 口语课</div>
+        <div class="content-label">🎯 学习目标</div>
+        <ul class="goals">
+          <li>学习餐厅相关表达，制作英文菜单</li>
+          <li>在老师引导下，学习与练习在餐厅点餐</li>
+        </ul>
+        <div class="homework"><strong>📝 作业：</strong>跟读Part EF · 口语任务 · 背诵句子</div>
+      </div>
+
+      <div class="day-card">
+        <div class="day">周四</div>
+        <div class="date">06.18</div>
+        <div class="content-label">📖 学习内容</div>
+        <div class="content">Ch6 练习课</div>
+        <div class="content-label">🎯 学习目标</div>
+        <ul class="goals">
+          <li>听写Ch6句子</li>
+          <li>完成Ch5 Listening Skills练习，订正核心练习，查漏补缺</li>
+        </ul>
+        <div class="homework"><strong>📝 作业：</strong>订正句子听写 · Ch6复习单 · Ch5-6单词单</div>
+      </div>
+
+      <div class="day-card holiday-card">
+        <div class="day">周五</div>
+        <div class="date">06.19</div>
+        <div class="holiday-badge">🎉 端午放假</div>
+      </div>
+
+    </div>
+
+    <!-- Vocabulary & Sentences -->
+    <div class="vocab-section">
+      <h3>🍽️ Chapter 6 — Ordering Food 核心词汇</h3>
+      <div class="vocab-grid">
+        <div class="vocab-item"><span class="en">a cup of lemon tea</span><span class="cn">一杯柠檬茶</span></div>
+        <div class="vocab-item"><span class="en">a cup of hot chocolate</span><span class="cn">一杯热巧克力</span></div>
+        <div class="vocab-item"><span class="en">a glass of cola</span><span class="cn">一杯可乐</span></div>
+        <div class="vocab-item"><span class="en">a glass of apple juice</span><span class="cn">一杯苹果汁</span></div>
+        <div class="vocab-item"><span class="en">a plate of fried noodles</span><span class="cn">一盘炒面</span></div>
+        <div class="vocab-item"><span class="en">a plate of fried rice</span><span class="cn">一盘炒饭</span></div>
+        <div class="vocab-item"><span class="en">a bowl of congee</span><span class="cn">一碗粥</span></div>
+        <div class="vocab-item"><span class="en">a bowl of dumplings</span><span class="cn">一碗饺子</span></div>
+      </div>
+
+      <h3 style="margin-top:16px;">💬 核心句型</h3>
+      <div class="sentence-box">
+        <strong>Q:</strong> What would you like?<br>
+        <strong>A:</strong> I'd like a bowl of congee and a plate of fried noodles, and I'd also like a glass of cola.
+      </div>
+
+      <div class="dictation-note">
+        <strong>📝 听写安排：</strong>Wk15 听写单词 · Wk16 听写句子
+      </div>
+    </div>
+
+    <div style="background:#fff;border-radius:14px;padding:16px 20px;margin-top:16px;box-shadow:0 2px 8px rgba(0,0,0,0.06);font-size:14px;color:#666;line-height:1.8;">
+      <strong>📌 课前准备：</strong>新思维课本 · 听写本 · 语法/综合/听力练习册
+    </div>
+  </div>
+
+  <div class="footer">
+    🦞 由 OpenClaw 自动生成 · <a href="https://dltaixlt.github.io/drizzt-why">drizzt的十万个为什么</a>
+  </div>
+
+</div>
+
+<script>
+function switchTab(tab) {
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  document.querySelectorAll('.subject-section').forEach(s => s.classList.remove('active'));
+  document.querySelector(`.tab-btn[onclick*="'${tab}'"]`).classList.add('active');
+  document.getElementById(tab).classList.add('active');
+}
+</script>
+</body>
+</html>
