@@ -12,50 +12,55 @@
     min-height: 100vh;
     display: flex;
     justify-content: center;
-    align-items: center;
+    align-items: flex-start;
     color: #e0e0e0;
     padding: 20px;
   }
   .container {
-    max-width: 800px;
+    max-width: 900px;
     width: 100%;
     background: rgba(255,255,255,0.05);
     border-radius: 20px;
     padding: 30px;
     backdrop-filter: blur(10px);
     border: 1px solid rgba(255,255,255,0.1);
+    margin-top: 10px;
   }
+  .layout { display: flex; gap: 20px; flex-wrap: wrap; }
+  .layout-main { flex: 1; min-width: 320px; }
+  .layout-side { width: 260px; flex-shrink: 0; }
+  @media (max-width: 700px) { .layout-side { width: 100%; } }
   h1 {
     text-align: center;
-    font-size: 1.6em;
-    margin-bottom: 5px;
+    font-size: 1.4em;
+    margin-bottom: 3px;
     background: linear-gradient(90deg, #f7971e, #ffd200);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
   }
   .subtitle {
     text-align: center;
-    font-size: 0.85em;
+    font-size: 0.8em;
     color: #888;
-    margin-bottom: 15px;
+    margin-bottom: 12px;
   }
   .status-bar {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 15px;
-    padding: 10px 15px;
+    margin-bottom: 12px;
+    padding: 8px 12px;
     background: rgba(0,0,0,0.3);
     border-radius: 10px;
     flex-wrap: wrap;
-    gap: 8px;
+    gap: 6px;
   }
-  .status { font-size: 1em; font-weight: 600; }
+  .status { font-size: 0.9em; font-weight: 600; }
   .status .highlight { color: #ffd700; }
   .stats {
     display: flex;
-    gap: 15px;
-    font-size: 0.85em;
+    gap: 12px;
+    font-size: 0.8em;
     color: #aaa;
   }
   .stats span { white-space: nowrap; }
@@ -66,145 +71,242 @@
   .board {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
-    gap: 4px;
-    background: rgba(255,255,255,0.15);
-    padding: 4px;
-    border-radius: 12px;
+    gap: 3px;
+    background: rgba(255,255,255,0.12);
+    padding: 3px;
+    border-radius: 10px;
     aspect-ratio: 1;
     max-width: 100%;
   }
   .mini-board {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
-    gap: 2px;
+    gap: 1.5px;
     background: rgba(0,0,0,0.3);
-    padding: 3px;
-    border-radius: 6px;
+    padding: 2px;
+    border-radius: 5px;
     aspect-ratio: 1;
     position: relative;
   }
-  .mini-board.active {
-    background: rgba(255,215,0,0.15);
-    box-shadow: inset 0 0 15px rgba(255,215,0,0.2);
-  }
-  .mini-board.won-x { background: rgba(76,175,80,0.25); }
-  .mini-board.won-o { background: rgba(244,67,54,0.25); }
-  .mini-board.draw { background: rgba(255,152,0,0.15); }
+  .mini-board.active { background: rgba(255,215,0,0.12); box-shadow: inset 0 0 10px rgba(255,215,0,0.15); }
+  .mini-board.won-x { background: rgba(76,175,80,0.2); }
+  .mini-board.won-o { background: rgba(244,67,54,0.2); }
+  .mini-board.draw { background: rgba(255,152,0,0.1); }
   .cell {
     background: rgba(255,255,255,0.05);
-    border-radius: 3px;
+    border-radius: 2px;
     display: flex;
     justify-content: center;
     align-items: center;
-    font-size: 1.2em;
+    font-size: 1em;
     font-weight: bold;
     cursor: pointer;
-    transition: all 0.15s;
+    transition: all 0.12s;
     aspect-ratio: 1;
     user-select: none;
   }
-  .cell:hover:not(.taken):not(.disabled) { background: rgba(255,255,255,0.15); }
+  .cell:hover:not(.taken):not(.disabled) { background: rgba(255,255,255,0.12); }
   .cell.taken, .cell.disabled { cursor: default; }
   .cell.x { color: #4caf50; }
   .cell.o { color: #f44336; }
-  .cell.last-move { background: rgba(255,215,0,0.2); }
+  .cell.last-move { background: rgba(255,215,0,0.15); }
   .mini-board-status {
     position: absolute; top: 0; left: 0; right: 0; bottom: 0;
     display: flex; justify-content: center; align-items: center;
-    font-size: 2.5em; font-weight: bold; border-radius: 6px; pointer-events: none;
+    font-size: 2em; font-weight: bold; border-radius: 5px; pointer-events: none;
   }
-  .mini-board-status.x { color: rgba(76,175,80,0.6); }
-  .mini-board-status.o { color: rgba(244,67,54,0.6); }
-  .mini-board-status.draw { color: rgba(255,152,0,0.5); font-size: 1.6em; }
+  .mini-board-status.x { color: rgba(76,175,80,0.5); }
+  .mini-board-status.o { color: rgba(244,67,54,0.5); }
+  .mini-board-status.draw { color: rgba(255,152,0,0.4); font-size: 1.4em; }
   .controls {
-    display: flex; justify-content: center; gap: 12px; margin-top: 15px; flex-wrap: wrap;
+    display: flex; justify-content: center; gap: 10px; margin-top: 12px; flex-wrap: wrap;
   }
   button {
-    padding: 10px 24px; border: none; border-radius: 8px;
-    font-size: 0.9em; font-weight: 600; cursor: pointer; transition: all 0.2s;
+    padding: 8px 18px; border: none; border-radius: 8px;
+    font-size: 0.85em; font-weight: 600; cursor: pointer; transition: all 0.2s;
   }
   button:hover { transform: translateY(-1px); }
+  button:disabled { opacity: 0.4; cursor: not-allowed; transform: none; }
   .btn-new { background: linear-gradient(135deg, #667eea, #764ba2); color: white; }
-  .btn-evo { background: linear-gradient(135deg, #f7971e, #ffd200); color: #333; }
-  .btn-reset-evo { background: rgba(244,67,54,0.3); color: #f44336; border: 1px solid rgba(244,67,54,0.4); }
   .btn-train { background: linear-gradient(135deg, #00bcd4, #009688); color: white; }
   .btn-train.active { background: linear-gradient(135deg, #f44336, #e91e63); animation: pulse-btn 1s infinite; }
   @keyframes pulse-btn { 0%,100% { opacity: 1; } 50% { opacity: 0.6; } }
-  .btn-train:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
-  .evo-log {
-    margin-top: 15px; background: rgba(0,0,0,0.3); border-radius: 10px;
-    padding: 12px 15px; max-height: 250px; overflow-y: auto;
-    font-size: 0.8em; line-height: 1.5;
+  .btn-sync { background: linear-gradient(135deg, #ff9800, #f57c00); color: white; }
+  .btn-pk { background: linear-gradient(135deg, #e040fb, #7c4dff); color: white; }
+  .btn-evo { background: rgba(124,77,255,0.3); color: #b388ff; border: 1px solid rgba(124,77,255,0.3); }
+  .btn-reset { background: rgba(244,67,54,0.25); color: #ef9a9a; border: 1px solid rgba(244,67,54,0.3); }
+  .panel {
+    background: rgba(0,0,0,0.25);
+    border-radius: 10px;
+    padding: 12px;
+    margin-top: 10px;
+    font-size: 0.8em;
+    line-height: 1.5;
   }
-  .evo-log::-webkit-scrollbar { width: 4px; }
-  .evo-log::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.2); border-radius: 2px; }
-  .evo-log-title { font-weight: 600; color: #7c4dff; margin-bottom: 6px; font-size: 0.9em; }
-  .evo-entry { padding: 3px 0; border-bottom: 1px solid rgba(255,255,255,0.05); }
+  .panel-title { font-weight: 600; color: #7c4dff; margin-bottom: 6px; font-size: 0.95em; }
+  .panel::-webkit-scrollbar { width: 4px; }
+  .panel::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.15); border-radius: 2px; }
+  .evo-entry { padding: 2px 0; border-bottom: 1px solid rgba(255,255,255,0.04); }
   .evo-entry:last-child { border: none; }
   .evo-entry .time { color: #666; font-size: 0.85em; }
-  .evo-entry .tag { display: inline-block; padding: 1px 6px; border-radius: 4px; font-size: 0.8em; margin-right: 4px; }
-  .tag-evo { background: rgba(124,77,255,0.3); color: #b388ff; }
-  .tag-learn { background: rgba(76,175,80,0.3); color: #81c784; }
-  .tag-mistake { background: rgba(244,67,54,0.3); color: #ef9a9a; }
-  .tag-insight { background: rgba(255,215,0,0.3); color: #ffd54f; }
+  .evo-entry .tag { display: inline-block; padding: 1px 5px; border-radius: 3px; font-size: 0.8em; margin-right: 3px; }
+  .tag-evo { background: rgba(124,77,255,0.25); color: #b388ff; }
+  .tag-learn { background: rgba(76,175,80,0.25); color: #81c784; }
+  .tag-mistake { background: rgba(244,67,54,0.25); color: #ef9a9a; }
+  .tag-insight { background: rgba(255,215,0,0.25); color: #ffd54f; }
   .ai-thinking { display: inline-block; animation: pulse 1s infinite; }
   @keyframes pulse { 0%,100% { opacity: 1; } 50% { opacity: 0.3; } }
+  .sidebar-section { margin-bottom: 12px; }
+  .sidebar-section h3 { font-size: 0.85em; color: #aaa; margin-bottom: 6px; border-bottom: 1px solid rgba(255,255,255,0.08); padding-bottom: 4px; }
+  .user-info { display: flex; align-items: center; gap: 8px; margin-bottom: 8px; }
+  .user-info .avatar { width: 28px; height: 28px; border-radius: 50%; background: linear-gradient(135deg, #667eea, #764ba2); display: flex; align-items: center; justify-content: center; font-size: 0.8em; font-weight: bold; }
+  .user-info .name { font-weight: 600; font-size: 0.9em; }
+  .user-info .elo { color: #ffd700; font-size: 0.8em; }
+  .login-form { display: flex; gap: 6px; flex-wrap: wrap; }
+  .login-form input { background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.1); border-radius: 5px; padding: 6px 10px; color: #e0e0e0; font-size: 0.85em; width: 100px; }
+  .login-form input:focus { outline: none; border-color: #7c4dff; }
+  .login-form button { padding: 6px 12px; font-size: 0.8em; }
+  .leaderboard-entry { display: flex; justify-content: space-between; padding: 3px 0; border-bottom: 1px solid rgba(255,255,255,0.04); font-size: 0.85em; }
+  .leaderboard-entry .rank { color: #666; width: 20px; }
+  .leaderboard-entry .lb-name { flex: 1; }
+  .leaderboard-entry .lb-elo { color: #ffd700; width: 50px; text-align: right; }
+  .leaderboard-entry .lb-record { color: #888; width: 80px; text-align: right; font-size: 0.85em; }
+  .leaderboard-entry.top1 .lb-name { color: #ffd700; }
+  .leaderboard-entry.top2 .lb-name { color: #c0c0c0; }
+  .leaderboard-entry.top3 .lb-name { color: #cd7f32; }
+  .pk-result { background: rgba(0,0,0,0.2); border-radius: 6px; padding: 8px; margin: 4px 0; font-size: 0.85em; }
+  .pk-result .vs { color: #666; }
+  .pk-result .win { color: #4caf50; }
+  .pk-result .lose { color: #f44336; }
+  .pk-result .draw { color: #ff9800; }
+  .train-panel { margin-top: 8px; }
+  .train-panel .stat-row { display: flex; gap: 10px; font-size: 0.8em; flex-wrap: wrap; }
+  .train-panel .stat-row span { white-space: nowrap; }
+  .train-progress { height: 3px; background: rgba(0,0,0,0.3); border-radius: 2px; overflow: hidden; margin-top: 6px; }
+  .train-progress div { height: 100%; background: linear-gradient(90deg, #00bcd4, #009688); border-radius: 2px; transition: width 0.3s; }
+  .modal-overlay {
+    position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+    background: rgba(0,0,0,0.7); display: flex; justify-content: center; align-items: center;
+    z-index: 1000;
+  }
+  .modal {
+    background: #1a1a2e; border-radius: 16px; padding: 24px; max-width: 500px; width: 90%;
+    border: 1px solid rgba(255,255,255,0.1);
+  }
+  .modal h2 { font-size: 1.1em; margin-bottom: 12px; color: #e040fb; }
+  .modal .close { float: right; cursor: pointer; color: #666; font-size: 1.2em; }
+  .modal .close:hover { color: #fff; }
+  .modal select, .modal button { width: 100%; padding: 10px; margin: 5px 0; border-radius: 8px; border: 1px solid rgba(255,255,255,0.1); background: rgba(255,255,255,0.08); color: #e0e0e0; font-size: 0.9em; }
+  .modal button.primary { background: linear-gradient(135deg, #e040fb, #7c4dff); color: white; border: none; }
+  .modal button.danger { background: rgba(244,67,54,0.3); color: #f44336; border: 1px solid rgba(244,67,54,0.3); }
+  .toast {
+    position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%);
+    background: rgba(0,0,0,0.85); color: #e0e0e0; padding: 10px 20px;
+    border-radius: 8px; font-size: 0.85em; z-index: 2000;
+    animation: fadeInOut 2.5s ease;
+  }
+  @keyframes fadeInOut { 0% { opacity: 0; bottom: 0; } 10% { opacity: 1; bottom: 20px; } 80% { opacity: 1; } 100% { opacity: 0; bottom: 0; } }
   @media (max-width: 500px) {
     .container { padding: 15px; }
-    .cell { font-size: 0.9em; }
-    .mini-board-status { font-size: 1.8em; }
+    .cell { font-size: 0.85em; }
+    .mini-board-status { font-size: 1.5em; }
     .status-bar { flex-direction: column; align-items: stretch; }
     .stats { flex-wrap: wrap; }
-    h1 { font-size: 1.2em; }
+    h1 { font-size: 1.1em; }
   }
 </style>
 </head>
 <body>
 <div class="container">
   <h1>♾️ 终极井字棋</h1>
-  <div class="subtitle">自我进化 AI · 每一步都在学习</div>
-  <div class="status-bar">
-    <div class="status" id="status">🦞 你执 <span class="highlight">X</span>，先手</div>
-    <div class="stats">
-      <span class="wins">🏆 <span id="wins">0</span></span>
-      <span class="losses">💀 <span id="losses">0</span></span>
-      <span class="draws">🤝 <span id="draws">0</span></span>
-      <span class="evo">🧬 等级 <span id="evoLevel">1</span></span>
+  <div class="subtitle">自我进化 AI · 云同步 · PK 对战 · 排行榜</div>
+  <div class="layout">
+    <div class="layout-main">
+      <div class="status-bar">
+        <div class="status" id="status">🦞 你执 <span class="highlight">X</span>，先手</div>
+        <div class="stats">
+          <span class="wins">🏆 <span id="wins">0</span></span>
+          <span class="losses">💀 <span id="losses">0</span></span>
+          <span class="draws">🤝 <span id="draws">0</span></span>
+          <span class="evo">🧬 等级 <span id="evoLevel">1</span></span>
+        </div>
+      </div>
+      <div class="board" id="board"></div>
+      <div class="controls">
+        <button class="btn-new" onclick="startNewGame()">🔄 新一局</button>
+        <button class="btn-train" id="trainBtn" onclick="toggleTraining()">⚡ 自对弈</button>
+        <button class="btn-sync" onclick="syncToServer()">☁️ 同步</button>
+        <button class="btn-pk" onclick="showPKModal()">⚔️ PK</button>
+        <button class="btn-evo" onclick="toggleEvoPanel()">📜 日志</button>
+        <button class="btn-reset" onclick="resetEvolution()">🗑️ 重置</button>
+      </div>
+      <div class="panel" id="evoLog" style="display:none; max-height:200px; overflow-y:auto;">
+        <div class="panel-title">🧬 自我进化记录</div>
+        <div id="evoEntries"></div>
+      </div>
+      <div class="train-panel" id="trainPanel" style="display:none;">
+        <div style="display:flex; justify-content:space-between; align-items:center;">
+          <span style="font-weight:600; color:#00bcd4; font-size:0.85em;">⚡ 自对弈训练</span>
+          <span id="trainStatus" style="font-size:0.8em; color:#aaa;">就绪</span>
+        </div>
+        <div class="stat-row" style="margin-top:5px;">
+          <span>已训练: <strong id="trainCount" style="color:#00bcd4;">0</strong> 局</span>
+          <span>🏆 胜率: <strong id="trainWinRate" style="color:#4caf50;">0%</strong></span>
+          <span>🤝 平局率: <strong id="trainDrawRate" style="color:#ff9800;">0%</strong></span>
+          <span>⚡ <strong id="trainSpeed" style="color:#aaa;">0</strong> 局/秒</span>
+        </div>
+        <div class="train-progress"><div id="trainProgress" style="width:0%"></div></div>
+      </div>
     </div>
-  </div>
-  <div class="board" id="board"></div>
-  <div class="controls">
-    <button class="btn-new" onclick="startNewGame()">🔄 新一局</button>
-    <button class="btn-train" id="trainBtn" onclick="toggleTraining()">⚡ 自对弈训练</button>
-    <button class="btn-evo" onclick="toggleEvoPanel()">🧬 进化日志</button>
-    <button class="btn-reset-evo" onclick="resetEvolution()">🗑️ 重置进化</button>
-  </div>
-  <div class="evo-log" id="evoLog" style="display:none;">
-    <div class="evo-log-title">🧬 自我进化记录</div>
-    <div id="evoEntries"></div>
-  </div>
-  <div class="train-panel" id="trainPanel" style="display:none; margin-top:10px; background:rgba(0,188,212,0.1); border-radius:10px; padding:12px 15px;">
-    <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px;">
-      <span style="font-weight:600; color:#00bcd4;">⚡ 自对弈训练</span>
-      <span id="trainStatus" style="font-size:0.85em; color:#aaa;">就绪</span>
-    </div>
-    <div style="margin-top:8px; display:flex; gap:15px; font-size:0.85em; flex-wrap:wrap;">
-      <span>已训练: <strong id="trainCount" style="color:#00bcd4;">0</strong> 局</span>
-      <span>🏆 AI胜率: <strong id="trainWinRate" style="color:#4caf50;">0%</strong></span>
-      <span>🤝 平局率: <strong id="trainDrawRate" style="color:#ff9800;">0%</strong></span>
-      <span>⚡ 速度: <strong id="trainSpeed" style="color:#aaa;">0</strong> 局/秒</span>
-    </div>
-    <div style="margin-top:8px; height:4px; background:rgba(0,0,0,0.3); border-radius:2px; overflow:hidden;">
-      <div id="trainProgress" style="height:100%; width:0%; background:linear-gradient(90deg, #00bcd4, #009688); border-radius:2px; transition:width 0.3s;"></div>
+    <div class="layout-side">
+      <!-- 用户信息 -->
+      <div class="sidebar-section">
+        <h3>👤 用户</h3>
+        <div id="userArea">
+          <div class="login-form" id="loginForm">
+            <input type="text" id="loginName" placeholder="用户名" maxlength="20">
+            <input type="password" id="loginPass" placeholder="密码(可选)">
+            <button onclick="register()" style="background:linear-gradient(135deg,#667eea,#764ba2);color:white;">注册</button>
+            <button onclick="login()" style="background:rgba(255,255,255,0.1);color:#e0e0e0;">登录</button>
+          </div>
+        </div>
+      </div>
+      <!-- 排行榜 -->
+      <div class="sidebar-section">
+        <h3>🏆 排行榜</h3>
+        <div id="leaderboard" style="max-height:250px; overflow-y:auto;">
+          <div style="color:#666; text-align:center; padding:10px; font-size:0.85em;">登录后查看</div>
+        </div>
+      </div>
+      <!-- PK 历史 -->
+      <div class="sidebar-section">
+        <h3>⚔️ PK 历史</h3>
+        <div id="pkHistory" style="max-height:180px; overflow-y:auto;">
+          <div style="color:#666; text-align:center; padding:10px; font-size:0.85em;">暂无记录</div>
+        </div>
+      </div>
     </div>
   </div>
 </div>
+
+<!-- PK 弹窗 -->
+<div class="modal-overlay" id="pkModal" style="display:none;" onclick="if(event.target===this)hidePKModal()">
+  <div class="modal">
+    <span class="close" onclick="hidePKModal()">✕</span>
+    <h2>⚔️ AI PK 对战</h2>
+    <p style="font-size:0.85em; color:#aaa; margin-bottom:10px;">选择对手，AI 自动对战，胜者获得 ELO 积分</p>
+    <select id="pkOpponent" size="5" style="height:150px;"></select>
+    <button class="primary" onclick="startPK()">⚔️ 开始 PK</button>
+    <button class="danger" onclick="hidePKModal()">取消</button>
+  </div>
+</div>
+
 <script>
 // ============================================================
-// 终极井字棋 (Ultimate Tic-Tac-Toe) - 自我进化 AI
-// Loop 精神：每下一局 → 复盘 → 学习 → 下一局更强
+// 终极井字棋 - 自我进化 AI + 云同步 + PK + 排行榜
 // ============================================================
 
+const API_BASE = "https://ultimate-ttt-server.onrender.com";
 const EMPTY = "";
 const X = "X";
 const O = "O";
@@ -218,57 +320,58 @@ let gameOver = false;
 let lastMove = null;
 let moveHistory = [];
 
+// ---------- 用户系统 ----------
+let currentUser = null;
+try {
+  const saved = localStorage.getItem("ultimate-ttt-user");
+  if (saved) currentUser = JSON.parse(saved);
+} catch(e) {}
+
 // ---------- AI 进化系统 ----------
 let evolution = {
-  level: 1,
-  totalGames: 0,
-  wins: 0,
-  losses: 0,
-  draws: 0,
+  level: 1, totalGames: 0, wins: 0, losses: 0, draws: 0,
   knowledge: {
     openingWeights: [[0.5,0.3,0.5],[0.3,1.0,0.3],[0.5,0.3,0.5]],
-    cornerPreference: 0.7,
-    centerPreference: 0.6,
-    globalWeight: 0.4,
-    aggression: 0.5,
-    defenseAwareness: 0.5
+    cornerPreference: 0.7, centerPreference: 0.6, globalWeight: 0.4, aggression: 0.5, defenseAwareness: 0.5
   },
   experience: [],
   log: []
 };
 
+// ---------- 训练系统 ----------
+let trainingActive = false;
+let trainingPaused = false;
+let trainingTotal = 0;
+let trainingStartTime = 0;
+let trainingStats = { aiWins: 0, aiLosses: 0, draws: 0 };
+
+// 训练用独立副本
+let trainBoard = [];
+let trainMiniWinners = [];
+let trainGlobalBoard = [];
+let trainActiveMiniBoard = -1;
+let trainGameOver = false;
+let trainMoveHistory = [];
+let trainCurrentPlayer = X;
+
 // ---------- Board 工具 ----------
 function initBoard() {
-  board = [];
-  miniWinners = Array(9).fill(EMPTY);
-  globalBoard = Array(9).fill(EMPTY);
-  currentPlayer = X;
-  activeMiniBoard = -1;
-  gameOver = false;
-  lastMove = null;
-  moveHistory = [];
-  for (let mb = 0; mb < 9; mb++) {
-    const mini = [];
-    for (let c = 0; c < 9; c++) mini.push(EMPTY);
-    board.push(mini);
-  }
+  board = []; miniWinners = Array(9).fill(EMPTY); globalBoard = Array(9).fill(EMPTY);
+  currentPlayer = X; activeMiniBoard = -1; gameOver = false; lastMove = null; moveHistory = [];
+  for (let mb = 0; mb < 9; mb++) { const mini = []; for (let c = 0; c < 9; c++) mini.push(EMPTY); board.push(mini); }
 }
 
 function checkMiniWinner(mb) {
   const b = board[mb];
   const lines = [[0,1,2],[3,4,5],[6,7,8],[0,3,6],[1,4,7],[2,5,8],[0,4,8],[2,4,6]];
-  for (const l of lines) {
-    if (b[l[0]] && b[l[0]] === b[l[1]] && b[l[1]] === b[l[2]]) return b[l[0]];
-  }
+  for (const l of lines) { if (b[l[0]] && b[l[0]] === b[l[1]] && b[l[1]] === b[l[2]]) return b[l[0]]; }
   if (b.every(c => c !== EMPTY)) return "draw";
   return null;
 }
 
 function checkGlobalWinner() {
   const lines = [[0,1,2],[3,4,5],[6,7,8],[0,3,6],[1,4,7],[2,5,8],[0,4,8],[2,4,6]];
-  for (const l of lines) {
-    if (globalBoard[l[0]] && globalBoard[l[0]] === globalBoard[l[1]] && globalBoard[l[1]] === globalBoard[l[2]]) return globalBoard[l[0]];
-  }
+  for (const l of lines) { if (globalBoard[l[0]] && globalBoard[l[0]] === globalBoard[l[1]] && globalBoard[l[1]] === globalBoard[l[2]]) return globalBoard[l[0]]; }
   if (globalBoard.every(c => c !== EMPTY)) return "draw";
   return null;
 }
@@ -277,16 +380,12 @@ function getLegalMoves() {
   const moves = [];
   if (gameOver) return moves;
   if (activeMiniBoard >= 0 && miniWinners[activeMiniBoard] === EMPTY) {
-    for (let c = 0; c < 9; c++) {
-      if (board[activeMiniBoard][c] === EMPTY) moves.push({ mb: activeMiniBoard, cell: c });
-    }
+    for (let c = 0; c < 9; c++) { if (board[activeMiniBoard][c] === EMPTY) moves.push({ mb: activeMiniBoard, cell: c }); }
     if (moves.length > 0) return moves;
   }
   for (let mb = 0; mb < 9; mb++) {
     if (miniWinners[mb] !== EMPTY) continue;
-    for (let c = 0; c < 9; c++) {
-      if (board[mb][c] === EMPTY) moves.push({ mb, cell: c });
-    }
+    for (let c = 0; c < 9; c++) { if (board[mb][c] === EMPTY) moves.push({ mb, cell: c }); }
   }
   return moves;
 }
@@ -296,10 +395,7 @@ function makeMove(mb, cell, player) {
   lastMove = { mb, cell };
   moveHistory.push({ mb, cell, player, gameNumber: evolution.totalGames + 1, moveNumber: moveHistory.length });
   const result = checkMiniWinner(mb);
-  if (result) {
-    miniWinners[mb] = result;
-    globalBoard[mb] = (result === X || result === O) ? result : "draw";
-  }
+  if (result) { miniWinners[mb] = result; globalBoard[mb] = (result === X || result === O) ? result : "draw"; }
   activeMiniBoard = cell;
   if (miniWinners[cell]) activeMiniBoard = -1;
 }
@@ -335,8 +431,7 @@ function render() {
     }
     boardEl.appendChild(miniEl);
   }
-  updateStatus();
-  updateStats();
+  updateStatus(); updateStats();
 }
 
 function updateStatus() {
@@ -376,14 +471,12 @@ function handleCellClick(mb, cell) {
     else if (winner === O) evolution.wins++;
     else if (winner === "draw") evolution.draws++;
     evolution.totalGames++;
-    render();
-    afterGameAnalysis();
-    saveEvolution();
+    render(); afterGameAnalysis(); saveEvolution();
     return;
   }
   currentPlayer = O;
   render();
-  setTimeout(aiMove, 300);
+  setTimeout(aiMove, 200);
 }
 
 // ---------- AI 核心 ----------
@@ -397,9 +490,7 @@ function aiMove() {
     else if (w === O) evolution.wins++;
     else if (w === "draw") evolution.draws++;
     evolution.totalGames++;
-    saveEvolution();
-    render();
-    afterGameAnalysis();
+    saveEvolution(); render(); afterGameAnalysis();
     return;
   }
   const move = aiSelectMove(moves);
@@ -411,9 +502,7 @@ function aiMove() {
     else if (winner === O) evolution.wins++;
     else if (winner === "draw") evolution.draws++;
     evolution.totalGames++;
-    render();
-    afterGameAnalysis();
-    saveEvolution();
+    render(); afterGameAnalysis(); saveEvolution();
     return;
   }
   currentPlayer = X;
@@ -424,87 +513,46 @@ function aiSelectMove(moves) {
   const scored = moves.map(m => ({ ...m, score: aiScoreMove(m) }));
   scored.sort((a, b) => b.score - a.score);
   const randomness = Math.max(0.02, 0.2 - evolution.level * 0.02);
-  if (Math.random() < randomness) {
-    const idx = Math.floor(Math.random() * Math.min(3, scored.length));
-    return scored[idx];
-  }
+  if (Math.random() < randomness) { const idx = Math.floor(Math.random() * Math.min(3, scored.length)); return scored[idx]; }
   return scored[0];
 }
 
 function aiScoreMove(move) {
   const { mb, cell } = move;
-  const row = Math.floor(cell / 3);
-  const col = cell % 3;
+  const row = Math.floor(cell / 3), col = cell % 3;
   let score = 0;
-
-  // 1. 立即获胜
-  const testBoard = [...board[mb]];
-  testBoard[cell] = O;
+  const testBoard = [...board[mb]]; testBoard[cell] = O;
   if (checkMiniWinnerCustom(testBoard) === O) score += 1000;
-
-  // 2. 阻止玩家获胜
-  const testBoardX = [...board[mb]];
-  testBoardX[cell] = X;
+  const testBoardX = [...board[mb]]; testBoardX[cell] = X;
   if (checkMiniWinnerCustom(testBoardX) === X) score += 900;
-
-  // 3. 创建双线威胁
-  const threatCount = countThreats(mb, cell, O);
-  score += threatCount * 150;
-
-  // 4. 阻止玩家双线威胁
-  const playerThreatCount = countThreats(mb, cell, X);
-  score += playerThreatCount * 100;
-
-  // 5. 小棋盘获胜潜力
-  const miniPotential = evaluateMiniWinPotential(mb, cell);
-  score += miniPotential * 50;
-
-  // 6. 控制对手下一步区域
+  score += countThreats(mb, cell, O) * 150;
+  score += countThreats(mb, cell, X) * 100;
+  score += evaluateMiniWinPotential(mb, cell) * 50;
   const nextMb = cell;
   if (nextMb >= 0 && nextMb < 9) {
-    if (miniWinners[nextMb] === EMPTY) {
-      const ourAdv = evaluateMiniAdvantage(nextMb, O);
-      const theirAdv = evaluateMiniAdvantage(nextMb, X);
-      score += (ourAdv - theirAdv) * 30;
-    } else {
-      score -= 50;
-    }
+    if (miniWinners[nextMb] === EMPTY) { score += (evaluateMiniAdvantage(nextMb, O) - evaluateMiniAdvantage(nextMb, X)) * 30; }
+    else { score -= 50; }
   }
-
-  // 7. 进化知识
   score += applyEvolutionKnowledge(mb, cell);
-
-  // 8. 位置偏好
-  const posWeight = evolution.knowledge.openingWeights[row][col];
-  score += posWeight * 10;
-
-  // 9. 全局策略
+  score += evolution.knowledge.openingWeights[row][col] * 10;
   if (globalBoard[mb] === EMPTY) {
     if (countGlobalThreats(O) > 0) score += 20;
     if (countGlobalThreats(X) > 0) score += 15;
   }
-
   return score;
 }
 
 function checkMiniWinnerCustom(b) {
   const lines = [[0,1,2],[3,4,5],[6,7,8],[0,3,6],[1,4,7],[2,5,8],[0,4,8],[2,4,6]];
-  for (const l of lines) {
-    if (b[l[0]] && b[l[0]] === b[l[1]] && b[l[1]] === b[l[2]]) return b[l[0]];
-  }
+  for (const l of lines) { if (b[l[0]] && b[l[0]] === b[l[1]] && b[l[1]] === b[l[2]]) return b[l[0]]; }
   return null;
 }
 
 function countThreats(mb, cell, player) {
-  const testBoard = [...board[mb]];
-  testBoard[cell] = player;
+  const testBoard = [...board[mb]]; testBoard[cell] = player;
   const lines = [[0,1,2],[3,4,5],[6,7,8],[0,3,6],[1,4,7],[2,5,8],[0,4,8],[2,4,6]];
   let threats = 0;
-  for (const l of lines) {
-    const p = l.filter(i => testBoard[i] === player).length;
-    const e = l.filter(i => testBoard[i] === EMPTY).length;
-    if (p === 2 && e === 1) threats++;
-  }
+  for (const l of lines) { const p = l.filter(i => testBoard[i] === player).length, e = l.filter(i => testBoard[i] === EMPTY).length; if (p === 2 && e === 1) threats++; }
   return threats;
 }
 
@@ -529,9 +577,7 @@ function evaluateMiniAdvantage(mb, player) {
   for (const l of lines) {
     const pCount = l.filter(i => board[mb][i] === player).length;
     const eCount = l.filter(i => board[mb][i] === EMPTY).length;
-    if (pCount > 0 && eCount > 0 && l.filter(i => board[mb][i] !== EMPTY && board[mb][i] !== player).length === 0) {
-      score += pCount * pCount;
-    }
+    if (pCount > 0 && eCount > 0 && l.filter(i => board[mb][i] !== EMPTY && board[mb][i] !== player).length === 0) score += pCount * pCount;
   }
   return score;
 }
@@ -539,11 +585,7 @@ function evaluateMiniAdvantage(mb, player) {
 function countGlobalThreats(player) {
   const lines = [[0,1,2],[3,4,5],[6,7,8],[0,3,6],[1,4,7],[2,5,8],[0,4,8],[2,4,6]];
   let threats = 0;
-  for (const l of lines) {
-    const pCount = l.filter(i => globalBoard[i] === player).length;
-    const eCount = l.filter(i => globalBoard[i] === EMPTY).length;
-    if (pCount === 2 && eCount === 1) threats++;
-  }
+  for (const l of lines) { const p = l.filter(i => globalBoard[i] === player).length, e = l.filter(i => globalBoard[i] === EMPTY).length; if (p === 2 && e === 1) threats++; }
   return threats;
 }
 
@@ -560,61 +602,37 @@ function applyEvolutionKnowledge(mb, cell) {
 // ---------- 赛后复盘与进化 ----------
 function afterGameAnalysis() {
   const winner = checkGlobalWinner();
-  const aiWon = winner === O;
-  const aiLost = winner === X;
-  const isDraw = winner === "draw";
+  const aiWon = winner === O, aiLost = winner === X, isDraw = winner === "draw";
   let evoMessages = [];
-
   for (let i = 0; i < moveHistory.length; i++) {
     const m = moveHistory[i];
-    if (m.player === O) {
-      const outcome = aiWon ? "win" : (aiLost ? "loss" : "draw");
-      evolution.experience.push({ mb: m.mb, cell: m.cell, outcome, gameNumber: evolution.totalGames, moveNumber: i });
-    }
+    if (m.player === O) { evolution.experience.push({ mb: m.mb, cell: m.cell, outcome: aiWon ? "win" : (aiLost ? "loss" : "draw"), gameNumber: evolution.totalGames, moveNumber: i }); }
   }
   if (evolution.experience.length > 1000) evolution.experience = evolution.experience.slice(-800);
-
   if (aiWon) {
     evolution.knowledge.aggression = Math.min(0.9, evolution.knowledge.aggression + 0.02);
     evolution.knowledge.globalWeight = Math.min(0.7, evolution.knowledge.globalWeight + 0.01);
     evoMessages.push({ type: "evo", msg: "🏆 第 " + evolution.totalGames + " 局获胜 · 进攻性提升至 " + evolution.knowledge.aggression.toFixed(2) });
     const aiMoves = moveHistory.filter(m => m.player === O);
-    if (aiMoves.length > 0) {
-      const lastAi = aiMoves[aiMoves.length - 1];
-      evoMessages.push({ type: "learn", msg: "📌 关键落子: 小棋盘 " + lastAi.mb + " 位置 " + lastAi.cell + " → 标记为有效策略" });
-    }
+    if (aiMoves.length > 0) { const lastAi = aiMoves[aiMoves.length - 1]; evoMessages.push({ type: "learn", msg: "📌 关键落子: 小棋盘 " + lastAi.mb + " 位置 " + lastAi.cell + " → 标记为有效策略" }); }
   }
-
   if (aiLost) {
     evolution.knowledge.aggression = Math.max(0.2, evolution.knowledge.aggression - 0.03);
     evolution.knowledge.cornerPreference = Math.min(0.9, evolution.knowledge.cornerPreference + 0.05);
     evolution.knowledge.defenseAwareness = Math.min(0.9, evolution.knowledge.defenseAwareness + 0.03);
     evoMessages.push({ type: "mistake", msg: "💀 第 " + evolution.totalGames + " 局失败 · 防守意识提升至 " + evolution.knowledge.defenseAwareness.toFixed(2) + "，角落偏好增至 " + evolution.knowledge.cornerPreference.toFixed(2) });
-    const aiMoves = moveHistory.filter(m => m.player === O);
-    for (const m of aiMoves) {
-      const tb = [...board[m.mb]];
-      tb[m.cell] = X;
-      if (checkMiniWinnerCustom(tb) === X) {
-        evoMessages.push({ type: "mistake", msg: "⚠️ 失误分析: 小棋盘 " + m.mb + " 位置 " + m.cell + " 未能阻止玩家连线 → 标记为高风险" });
-        break;
-      }
+    for (const m of moveHistory.filter(m => m.player === O)) {
+      const tb = [...board[m.mb]]; tb[m.cell] = X;
+      if (checkMiniWinnerCustom(tb) === X) { evoMessages.push({ type: "mistake", msg: "⚠️ 失误分析: 小棋盘 " + m.mb + " 位置 " + m.cell + " 未能阻止玩家连线 → 标记为高风险" }); break; }
     }
   }
-
   if (isDraw) {
     evolution.knowledge.aggression += 0.01;
     evolution.knowledge.centerPreference += 0.02;
     evoMessages.push({ type: "insight", msg: "🤝 第 " + evolution.totalGames + " 局平局 · 中心控制偏好提升至 " + evolution.knowledge.centerPreference.toFixed(2) });
   }
-
-  if (evolution.totalGames % 5 === 0 && evolution.totalGames > 0) {
-    evolution.level++;
-    evoMessages.push({ type: "evo", msg: "⬆️ 进化等级提升至 " + evolution.level + "！策略知识库已更新" });
-  }
-
-  for (const m of evoMessages) {
-    evolution.log.push({ time: new Date().toLocaleTimeString(), type: m.type, msg: m.msg, gameNumber: evolution.totalGames });
-  }
+  if (evolution.totalGames % 5 === 0 && evolution.totalGames > 0) { evolution.level++; evoMessages.push({ type: "evo", msg: "⬆️ 进化等级提升至 " + evolution.level + "！策略知识库已更新" }); }
+  for (const m of evoMessages) { evolution.log.push({ time: new Date().toLocaleTimeString(), type: m.type, msg: m.msg, gameNumber: evolution.totalGames }); }
   renderEvoLog(evoMessages);
 }
 
@@ -631,6 +649,496 @@ function renderEvoLog(newEntries) {
   }
   entries.innerHTML = "";
   entries.appendChild(fragment);
+}
+
+// ---------- 自对弈训练 ----------
+function initTrainBoard() {
+  trainBoard = []; trainMiniWinners = Array(9).fill(EMPTY); trainGlobalBoard = Array(9).fill(EMPTY);
+  trainActiveMiniBoard = -1; trainGameOver = false; trainMoveHistory = []; trainCurrentPlayer = X;
+  for (let mb = 0; mb < 9; mb++) { const mini = []; for (let c = 0; c < 9; c++) mini.push(EMPTY); trainBoard.push(mini); }
+}
+
+function getTrainLegalMoves() {
+  const moves = [];
+  if (trainGameOver) return moves;
+  if (trainActiveMiniBoard >= 0 && trainMiniWinners[trainActiveMiniBoard] === EMPTY) {
+    for (let c = 0; c < 9; c++) { if (trainBoard[trainActiveMiniBoard][c] === EMPTY) moves.push({ mb: trainActiveMiniBoard, cell: c }); }
+    if (moves.length > 0) return moves;
+  }
+  for (let mb = 0; mb < 9; mb++) {
+    if (trainMiniWinners[mb] !== EMPTY) continue;
+    for (let c = 0; c < 9; c++) { if (trainBoard[mb][c] === EMPTY) moves.push({ mb, cell: c }); }
+  }
+  return moves;
+}
+
+function makeTrainMove(mb, cell, player) {
+  trainBoard[mb][cell] = player;
+  trainMoveHistory.push({ mb, cell, player });
+  const result = checkMiniWinnerCustom(trainBoard[mb]);
+  if (result) { trainMiniWinners[mb] = result; trainGlobalBoard[mb] = (result === X || result === O) ? result : "draw"; }
+  trainActiveMiniBoard = cell;
+  if (trainMiniWinners[cell]) trainActiveMiniBoard = -1;
+}
+
+function trainAiScoreMove(mb, cell, player) {
+  const row = Math.floor(cell / 3), col = cell % 3;
+  let score = 0;
+  const opponent = player === X ? O : X;
+  const testBoard = [...trainBoard[mb]]; testBoard[cell] = player;
+  if (checkMiniWinnerCustom(testBoard) === player) score += 1000;
+  const testBoardOpp = [...trainBoard[mb]]; testBoardOpp[cell] = opponent;
+  if (checkMiniWinnerCustom(testBoardOpp) === opponent) score += 900;
+  const lines = [[0,1,2],[3,4,5],[6,7,8],[0,3,6],[1,4,7],[2,5,8],[0,4,8],[2,4,6]];
+  let threats = 0, oppThreats = 0;
+  for (const l of lines) {
+    const p = l.filter(i => testBoard[i] === player).length, e = l.filter(i => testBoard[i] === EMPTY).length;
+    if (p === 2 && e === 1) threats++;
+    const po = l.filter(i => testBoardOpp[i] === opponent).length, eo = l.filter(i => testBoardOpp[i] === EMPTY).length;
+    if (po === 2 && eo === 1) oppThreats++;
+  }
+  score += threats * 150 + oppThreats * 100;
+  let miniPotential = 0;
+  for (const l of lines) {
+    if (cell === l[0] || cell === l[1] || cell === l[2]) {
+      const ourCount = l.filter(i => trainBoard[mb][i] === player).length;
+      const emptyCount = l.filter(i => trainBoard[mb][i] === EMPTY).length;
+      const oppCount = l.filter(i => trainBoard[mb][i] !== EMPTY && trainBoard[mb][i] !== player).length;
+      if (emptyCount > 0 && oppCount === 0) miniPotential += ourCount + 1;
+    }
+  }
+  score += miniPotential * 50;
+  const nextMb = cell;
+  if (nextMb >= 0 && nextMb < 9) {
+    if (trainMiniWinners[nextMb] === EMPTY) {
+      let ourAdv = 0, theirAdv = 0;
+      for (const l of lines) {
+        const p = l.filter(i => trainBoard[nextMb][i] === player).length, e = l.filter(i => trainBoard[nextMb][i] === EMPTY).length;
+        if (p > 0 && e > 0 && l.filter(i => trainBoard[nextMb][i] !== EMPTY && trainBoard[nextMb][i] !== player).length === 0) ourAdv += p * p;
+        const po = l.filter(i => trainBoard[nextMb][i] === opponent).length, eo = l.filter(i => trainBoard[nextMb][i] === EMPTY).length;
+        if (po > 0 && eo > 0 && l.filter(i => trainBoard[nextMb][i] !== EMPTY && trainBoard[nextMb][i] !== opponent).length === 0) theirAdv += po * po;
+      }
+      score += (ourAdv - theirAdv) * 30;
+    } else score -= 50;
+  }
+  for (const exp of evolution.experience) {
+    if (exp.mb === mb && exp.cell === cell && exp.outcome === "win") score += 20;
+    if (exp.mb === mb && exp.cell === cell && exp.outcome === "loss") score -= 30;
+  }
+  score += evolution.level * 0.5 + evolution.knowledge.openingWeights[row][col] * 10;
+  if (trainGlobalBoard[mb] === EMPTY) {
+    let gThreats = 0, gOppThreats = 0;
+    const glines = [[0,1,2],[3,4,5],[6,7,8],[0,3,6],[1,4,7],[2,5,8],[0,4,8],[2,4,6]];
+    for (const l of glines) {
+      const p = l.filter(i => trainGlobalBoard[i] === player).length, e = l.filter(i => trainGlobalBoard[i] === EMPTY).length;
+      if (p === 2 && e === 1) gThreats++;
+      const po = l.filter(i => trainGlobalBoard[i] === opponent).length, eo = l.filter(i => trainGlobalBoard[i] === EMPTY).length;
+      if (po === 2 && eo === 1) gOppThreats++;
+    }
+    if (gThreats > 0) score += 20;
+    if (gOppThreats > 0) score += 15;
+  }
+  if (player === O) {
+    score += evolution.knowledge.aggression * 5;
+    if (row === 0 || row === 2 || col === 0 || col === 2) score += evolution.knowledge.cornerPreference * 8;
+    if (cell === 4) score += evolution.knowledge.centerPreference * 8;
+  } else {
+    score += evolution.knowledge.aggression * 4;
+    if (row === 0 || row === 2 || col === 0 || col === 2) score += evolution.knowledge.cornerPreference * 6;
+    if (cell === 4) score += evolution.knowledge.centerPreference * 6;
+  }
+  return score;
+}
+
+function runOneTrainGame() {
+  initTrainBoard();
+  let moveCount = 0;
+  while (!trainGameOver && moveCount < 81) {
+    const moves = getTrainLegalMoves();
+    if (moves.length === 0) break;
+    const scored = moves.map(m => ({ ...m, score: trainAiScoreMove(m.mb, m.cell, trainCurrentPlayer) }));
+    scored.sort((a, b) => b.score - a.score);
+    const randomness = Math.max(0.01, 0.15 - evolution.level * 0.015);
+    const move = Math.random() < randomness ? scored[Math.floor(Math.random() * Math.min(3, scored.length))] : scored[0];
+    makeTrainMove(move.mb, move.cell, trainCurrentPlayer);
+    moveCount++;
+    const winner = checkMiniWinnerCustom(trainGlobalBoard);
+    if (winner) {
+      trainGameOver = true;
+      const aiWon = winner === O, aiLost = winner === X, isDraw = winner === "draw";
+      for (const m of trainMoveHistory) {
+        if (m.player === O) evolution.experience.push({ mb: m.mb, cell: m.cell, outcome: aiWon ? "win" : (aiLost ? "loss" : "draw"), gameNumber: evolution.totalGames + 1, moveNumber: 0 });
+      }
+      if (aiWon) { evolution.wins++; trainingStats.aiWins++; evolution.knowledge.aggression = Math.min(0.9, evolution.knowledge.aggression + 0.01); evolution.knowledge.globalWeight = Math.min(0.7, evolution.knowledge.globalWeight + 0.005); }
+      else if (aiLost) { evolution.losses++; trainingStats.aiLosses++; evolution.knowledge.aggression = Math.max(0.2, evolution.knowledge.aggression - 0.015); evolution.knowledge.cornerPreference = Math.min(0.9, evolution.knowledge.cornerPreference + 0.03); evolution.knowledge.defenseAwareness = Math.min(0.9, evolution.knowledge.defenseAwareness + 0.02); }
+      else { evolution.draws++; trainingStats.draws++; evolution.knowledge.aggression += 0.005; evolution.knowledge.centerPreference += 0.01; }
+      evolution.totalGames++; trainingTotal++;
+      if (evolution.totalGames % 20 === 0) {
+        const rate = ((evolution.wins / Math.max(1, evolution.totalGames)) * 100).toFixed(1);
+        evolution.log.push({ time: new Date().toLocaleTimeString(), type: "evo", msg: "⚡ 自对弈训练 " + evolution.totalGames + " 局 · 胜率 " + rate + "% · 等级 " + evolution.level, gameNumber: evolution.totalGames });
+      }
+      if (evolution.totalGames % 50 === 0) { evolution.level++; evolution.log.push({ time: new Date().toLocaleTimeString(), type: "evo", msg: "⬆️ 自对弈进化等级提升至 " + evolution.level + "！", gameNumber: evolution.totalGames }); }
+      if (evolution.experience.length > 2000) evolution.experience = evolution.experience.slice(-1500);
+      break;
+    }
+    trainCurrentPlayer = trainCurrentPlayer === X ? O : X;
+  }
+  if (!trainGameOver) { evolution.draws++; trainingStats.draws++; evolution.totalGames++; trainingTotal++; evolution.knowledge.aggression += 0.005; evolution.knowledge.centerPreference += 0.01; }
+}
+
+function runTrainingBatch(batchSize) {
+  if (!trainingActive || trainingPaused) return;
+  const start = performance.now();
+  for (let i = 0; i < batchSize; i++) { if (!trainingActive || trainingPaused) break; runOneTrainGame(); }
+  const elapsed = (performance.now() - start) / 1000;
+  const speed = batchSize / Math.max(0.001, elapsed);
+  document.getElementById("trainCount").textContent = evolution.totalGames;
+  const winRate = evolution.totalGames > 0 ? ((evolution.wins / evolution.totalGames) * 100).toFixed(1) : "0.0";
+  const drawRate = evolution.totalGames > 0 ? ((evolution.draws / evolution.totalGames) * 100).toFixed(1) : "0.0";
+  document.getElementById("trainWinRate").textContent = winRate + "%";
+  document.getElementById("trainDrawRate").textContent = drawRate + "%";
+  document.getElementById("trainSpeed").textContent = speed ? speed.toFixed(0) : "0";
+  document.getElementById("trainProgress").style.width = Math.min(100, (evolution.totalGames / 1000) * 100) + "%";
+  const elapsedMin = ((Date.now() - trainingStartTime) / 1000 / 60).toFixed(1);
+  document.getElementById("trainStatus").innerHTML = '🏃 ' + elapsedMin + ' 分钟 · ' + (speed ? speed.toFixed(0) : "0") + ' 局/秒';
+  updateStats();
+  if (trainingTotal % 50 === 0) saveEvolution();
+  if (trainingActive && !trainingPaused) { const nextBatch = Math.min(200, Math.max(10, Math.floor(speed * 5))); setTimeout(() => runTrainingBatch(nextBatch), 10); }
+}
+
+function toggleTraining() {
+  const btn = document.getElementById("trainBtn");
+  const panel = document.getElementById("trainPanel");
+  if (!trainingActive) {
+    trainingActive = true; trainingPaused = false; trainingTotal = 0; trainingStats = { aiWins: 0, aiLosses: 0, draws: 0 }; trainingStartTime = Date.now();
+    btn.textContent = "⏸️ 暂停"; btn.classList.add("active"); panel.style.display = "block";
+    saveEvolution();
+    setTimeout(() => runTrainingBatch(50), 100);
+  } else if (!trainingPaused) {
+    trainingPaused = true; btn.textContent = "▶️ 继续"; btn.classList.remove("active");
+    document.getElementById("trainStatus").textContent = "⏸️ 已暂停 · " + evolution.totalGames + " 局";
+    saveEvolution();
+  } else {
+    trainingPaused = false; btn.textContent = "⏸️ 暂停"; btn.classList.add("active");
+    document.getElementById("trainStatus").textContent = "🏃 继续训练...";
+    setTimeout(() => runTrainingBatch(50), 100);
+  }
+}
+
+// ---------- 云同步 ----------
+async function syncToServer() {
+  if (!currentUser) { showToast("请先登录后再同步"); return; }
+  const btn = document.querySelector(".btn-sync");
+  btn.disabled = true; btn.textContent = "☁️ 同步中...";
+  try {
+    const res = await fetch(API_BASE + "/api/evolution/save", {
+      method: "POST", headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ userId: currentUser.id, data: evolution })
+    });
+    if (!res.ok) { const err = await res.json(); throw new Error(err.error); }
+    showToast("✅ 进化数据已上传到服务器");
+    refreshLeaderboard();
+  } catch(e) { showToast("❌ 同步失败: " + e.message); }
+  btn.disabled = false; btn.textContent = "☁️ 同步";
+}
+
+async function loadFromServer() {
+  if (!currentUser) return;
+  try {
+    const res = await fetch(API_BASE + "/api/evolution/load/" + currentUser.id);
+    if (!res.ok) return;
+    const result = await res.json();
+    if (result.data) {
+      const serverGames = result.data.totalGames || 0;
+      const localGames = evolution.totalGames || 0;
+      if (serverGames > localGames) {
+        evolution = result.data;
+        if (!evolution.log) evolution.log = [];
+        if (!evolution.experience) evolution.experience = [];
+        if (!evolution.knowledge) evolution.knowledge = {};
+        saveEvolution();
+        render(); updateStats();
+        showToast("☁️ 已加载服务器数据（" + serverGames + " 局经验）");
+      }
+    }
+  } catch(e) { console.warn("load from server failed", e); }
+}
+
+// ---------- 用户系统 ----------
+async function register() {
+  const name = document.getElementById("loginName").value.trim();
+  const password = document.getElementById("loginPass").value;
+  if (!name) { showToast("请输入用户名"); return; }
+  try {
+    const res = await fetch(API_BASE + "/api/register", {
+      method: "POST", headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ name, password })
+    });
+    if (!res.ok) { const err = await res.json(); throw new Error(err.error); }
+    const user = await res.json();
+    currentUser = user;
+    localStorage.setItem("ultimate-ttt-user", JSON.stringify(user));
+    showToast("✅ 注册成功，欢迎 " + user.name);
+    updateUserUI();
+    refreshLeaderboard();
+    loadFromServer();
+  } catch(e) { showToast("❌ " + e.message); }
+}
+
+async function login() {
+  const name = document.getElementById("loginName").value.trim();
+  const password = document.getElementById("loginPass").value;
+  if (!name) { showToast("请输入用户名"); return; }
+  try {
+    const res = await fetch(API_BASE + "/api/login", {
+      method: "POST", headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ name, password })
+    });
+    if (!res.ok) { const err = await res.json(); throw new Error(err.error); }
+    const user = await res.json();
+    currentUser = user;
+    localStorage.setItem("ultimate-ttt-user", JSON.stringify(user));
+    showToast("✅ 登录成功");
+    updateUserUI();
+    refreshLeaderboard();
+    loadFromServer();
+  } catch(e) { showToast("❌ " + e.message); }
+}
+
+function logout() {
+  currentUser = null;
+  localStorage.removeItem("ultimate-ttt-user");
+  updateUserUI();
+  showToast("已退出登录");
+}
+
+function updateUserUI() {
+  const area = document.getElementById("userArea");
+  if (currentUser) {
+    area.innerHTML = '<div class="user-info"><div class="avatar">' + currentUser.name[0].toUpperCase() + '</div><div class="name">' + currentUser.name + '</div><div class="elo" id="userElo">ELO: --</div><button onclick="logout()" style="margin-left:auto;padding:4px 10px;font-size:0.75em;background:rgba(244,67,54,0.2);color:#ef9a9a;border:1px solid rgba(244,67,54,0.3);border-radius:4px;">退出</button></div>';
+    refreshLeaderboard();
+  } else {
+    area.innerHTML = '<div class="login-form" id="loginForm"><input type="text" id="loginName" placeholder="用户名" maxlength="20"><input type="password" id="loginPass" placeholder="密码(可选)"><button onclick="register()" style="background:linear-gradient(135deg,#667eea,#764ba2);color:white;">注册</button><button onclick="login()" style="background:rgba(255,255,255,0.1);color:#e0e0e0;">登录</button></div>';
+  }
+}
+
+// ---------- 排行榜 ----------
+async function refreshLeaderboard() {
+  try {
+    const res = await fetch(API_BASE + "/api/leaderboard");
+    if (!res.ok) return;
+    const board = await res.json();
+    const el = document.getElementById("leaderboard");
+    el.innerHTML = "";
+    if (board.length === 0) { el.innerHTML = '<div style="color:#666;text-align:center;padding:10px;font-size:0.85em;">暂无数据</div>'; return; }
+    board.forEach((entry, i) => {
+      const div = document.createElement("div");
+      div.className = "leaderboard-entry" + (i < 3 ? " top" + (i+1) : "");
+      const rank = i === 0 ? "🥇" : i === 1 ? "🥈" : i === 2 ? "🥉" : (i+1);
+      div.innerHTML = '<span class="rank">' + rank + '</span><span class="lb-name">' + entry.name + '</span><span class="lb-elo">' + entry.elo_rating + '</span><span class="lb-record">' + entry.wins + '🏆' + entry.losses + '💀</span>';
+      el.appendChild(div);
+    });
+    if (currentUser) {
+      const myEntry = board.find(e => e.name === currentUser.name);
+      if (myEntry) {
+        const eloEl = document.getElementById("userElo");
+        if (eloEl) eloEl.textContent = "ELO: " + myEntry.elo_rating;
+      }
+    }
+  } catch(e) { console.warn("leaderboard refresh failed", e); }
+}
+
+// ---------- PK 系统 ----------
+async function showPKModal() {
+  if (!currentUser) { showToast("请先登录后再 PK"); return; }
+  const modal = document.getElementById("pkModal");
+  const select = document.getElementById("pkOpponent");
+  select.innerHTML = '<option disabled>加载中...</option>';
+  modal.style.display = "flex";
+  try {
+    const res = await fetch(API_BASE + "/api/players");
+    if (!res.ok) return;
+    const players = await res.json();
+    select.innerHTML = "";
+    players.filter(p => p.id !== currentUser.id).forEach(p => {
+      const opt = document.createElement("option");
+      opt.value = p.id;
+      opt.textContent = p.name + " (ELO:" + (p.elo_rating || 1000) + " " + (p.wins||0) + "🏆" + (p.losses||0) + "💀)";
+      select.appendChild(opt);
+    });
+    if (select.options.length === 0) { select.innerHTML = '<option disabled>没有其他玩家</option>'; }
+  } catch(e) { select.innerHTML = '<option disabled>加载失败</option>'; }
+}
+
+function hidePKModal() { document.getElementById("pkModal").style.display = "none"; }
+
+async function startPK() {
+  const select = document.getElementById("pkOpponent");
+  const opponentId = select.value;
+  if (!opponentId) { showToast("请选择对手"); return; }
+  hidePKModal();
+  showToast("⚔️ PK 开始！AI 正在对战...");
+  // 保存当前进化数据到服务器
+  await fetch(API_BASE + "/api/evolution/save", {
+    method: "POST", headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ userId: currentUser.id, data: evolution })
+  });
+  // 加载对手的进化数据
+  try {
+    const res = await fetch(API_BASE + "/api/evolution/load/" + opponentId);
+    if (!res.ok) { showToast("❌ 无法加载对手数据"); return; }
+    const opponentData = (await res.json()).data;
+    // 保存当前进化数据
+    const myEvolution = JSON.parse(JSON.stringify(evolution));
+    // 进行 5 局 PK
+    let myWins = 0, oppWins = 0, draws = 0;
+    for (let g = 0; g < 5; g++) {
+      const result = await runPKGame(myEvolution, opponentDataapsed, g % 2 === 0);
+      if (result === "me") myWins++;
+      else if (result === "opp") oppWins++;
+      else draws++;
+    }
+    let winner;
+    if (myWins > oppWins) winner = "player1";
+    else if (oppWins > myWins) winner = "player2";
+    else winner = "draw";
+    // 提交结果
+    await fetch(API_BASE + "/api/pk/result", {
+      method: "POST", headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ player1Id: currentUser.id, player2Id: opponentId, winner, moves: [] })
+    });
+    const resultMsg = myWins > oppWins ? "🎉 你赢了 " + myWins + ":" + oppWins : (oppWins > myWins ? "💀 你输了 " + myWins + ":" + oppWins : "🤝 平局 " + myWins + ":" + oppWins);
+    showToast("⚔️ PK 结束！" + resultMsg);
+    refreshLeaderboard();
+    refreshPKHistory();
+  } catch(e) { showToast("❌ PK 失败: " + e.message); }
+}
+
+async function runPKGame(myEvo, oppEvo, iGoFirst) {
+  // 用两个进化数据分别初始化 AI
+  const savedEvo = JSON.parse(JSON.stringify(evolution));
+  const board = []; const miniW = Array(9).fill(EMPTY); const globalB = Array(9).fill(EMPTY);
+  for (let mb = 0; mb < 9; mb++) { const mini = []; for (let c = 0; c < 9; c++) mini.push(EMPTY); board.push(mini); }
+  let activeMB = -1, gameOver = false, currentP = X;
+  let moveCount = 0;
+  while (!gameOver && moveCount < 81) {
+    const moves = [];
+    if (activeMB >= 0 && miniW[activeMB] === EMPTY) {
+      for (let c = 0; c < 9; c++) { if (board[activeMB][c] === EMPTY) moves.push({ mb: activeMB, cell: c }); }
+      if (moves.length === 0) { for (let mb = 0; mb < 9; mb++) { if (miniW[mb] !== EMPTY) continue; for (let c = 0; c < 9; c++) { if (board[mb][c] === EMPTY) moves.push({ mb, cell: c }); } } }
+    } else {
+      for (let mb = 0; mb < 9; mb++) { if (miniW[mb] !== EMPTY) continue; for (let c = 0; c < 9; c++) { if (board[mb][c] === EMPTY) moves.push({ mb, cell: c }); } }
+    }
+    if (moves.length === 0) break;
+    const evo = (currentP === X) ? (iGoFirst ? myEvo : oppEvo) : (iGoFirst ? oppEvo : myEvo);
+    evolution = evo;
+    const scored = moves.map(m => {
+      const { mb, cell } = m;
+      const row = Math.floor(cell / 3), col = cell % 3;
+      let score = 0;
+      const testBoard = [...board[mb]]; testBoard[cell] = currentP;
+      const lines = [[0,1,2],[3,4,5],[6,7,8],[0,3,6],[1,4,7],[2,5,8],[0,4,8],[2,4,6]];
+      if (checkMiniWinnerCustom(testBoard) === currentP) score += 1000;
+      const opp = currentP === X ? O : X;
+      const testBoardOpp = [...board[mb]]; testBoardOpp[cell] = opp;
+      if (checkMiniWinnerCustom(testBoardOpp) === opp) score += 900;
+      let threats = 0, oppThreats = 0;
+      for (const l of lines) {
+        const p = l.filter(i => testBoard[i] === currentP).length, e = l.filter(i => testBoard[i] === EMPTY).length;
+        if (p === 2 && e === 1) threats++;
+        const po = l.filter(i => testBoardOpp[i] === opp).length, eo = l.filter(i => testBoardOpp[i] === EMPTY).length;
+        if (po === 2 && eo === 1) oppThreats++;
+      }
+      score += threats * 150 + oppThreats * 100;
+      let miniPotential = 0;
+      for (const l of lines) {
+        if (cell === l[0] || cell === l[1] || cell === l[2]) {
+          const ourCount = l.filter(i => board[mb][i] === currentP).length;
+          const{}          const emptyCount = l.filter(i => board[mb][i] === EMPTY).length;
+          const oppCount = l.filter(i => board[mb][i] !== EMPTY && board[mb][i] !== currentP).length;
+          if (emptyCount > 0 && oppCount === 0) miniPotential += ourCount + 1;
+        }
+      }
+      score += miniPotential * 50;
+      const nxt = cell;
+      if (nxt >= 0 && nxt < 9) {
+        if (miniW[nxt] === EMPTY) {
+          let ourAdv = 0, theirAdv = 0;
+          for (const l of lines) {
+            const p = l.filter(i => board[nxt][i] === currentP).length, e = l.filter(i => board[nxt][i] === EMPTY).length;
+            if (p > 0 && e > 0 && l.filter(i => board[nxt][i] !== EMPTY && board[nxt][i] !== currentP).length === 0) ourAdv += p * p;
+            const po = l.filter(i => board[nxt][i] === opp).length, eo = l.filter(i => board[nxt][i] === EMPTY).length;
+            if (po > 0 && eo > 0 && l.filter(i => board[nxt][i] !== EMPTY && board[nxt][i] !== opp).length === 0) theirAdv += po * po;
+          }
+          score += (ourAdv - theirAdv) * 30;
+        } else score -= 50;
+      }
+      score += evo.knowledge.openingWeights[row][col] * 10;
+      if (globalB[mb] === EMPTY) {
+        let gThreats = 0, gOppThreats = 0;
+        const glines = [[0,1,2],[3,4,5],[6,7,8],[0,3,6],[1,4,7],[2,5,8],[0,4,8],[2,4,6]];
+        for (const l of glines) {
+          const p = l.filter(i => globalB[i] === currentP).length, e = l.filter(i => globalB[i] === EMPTY).length;
+          if (p === 2 && e === 1) gThreats++;
+          const po = l.filter(i => globalB[i] === opp).length, eo = l.filter(i => globalB[i] === EMPTY).length;
+          if (po === 2 && eo === 1) gOppThreats++;
+        }
+        if (gThreats > 0) score += 20;
+        if (gOppThreats > 0) score += 15;
+      }
+      return score;
+    });
+    scored.sort((a, b) => b.score - a.score);
+    const move = scored[0];
+    board[move.mb][move.cell] = currentP;
+    const result = checkMiniWinnerCustom(board[move.mb]);
+    if (result) { miniW[move.mb] = result; globalB[move.mb] = (result === X || result === O) ? result : "draw"; }
+    activeMB = move.cell;
+    if (miniW[move.cell]) activeMB = -1;
+    const gWinner = checkGlobalWinnerCustom(globalB);
+    if (gWinner) {
+      gameOver = true;
+      evolution = savedEvo;
+      if (gWinner === X) return iGoFirst ? "me" : "opp";
+      else if (gWinner === O) return iGoFirst ? "opp" : "me";
+      else return "draw";
+    }
+    currentP = currentP === X ? O : X;
+    moveCount++;
+  }
+  evolution = savedEvo;
+  return "draw";
+}
+
+function checkGlobalWinnerCustom(gb) {
+  const lines = [[0,1,2],[3,4,5],[6,7,8],[0,3,6],[1,4,7],[2,5,8],[0,4,8],[2,4,6]];
+  for (const l of lines) { if (gb[l[0]] && gb[l[0]] === gb[l[1]] && gb[l[1]] === gb[l[2]]) return gb[l[0]]; }
+  if (gb.every(c => c !== EMPTY)) return "draw";
+  return null;
+}
+
+async function refreshPKHistory() {
+  if (!currentUser) return;
+  try {
+    const res = await fetch(API_BASE + "/api/pk/history/" + currentUser.id);
+    if (!res.ok) return;
+    const matches = await res.json();
+    const el = document.getElementById("pkHistory");
+    if (matches.length === 0) { el.innerHTML = '<div style="color:#666;text-align:center;padding:10px;font-size:0.85em;">暂无 PK 记录</div>'; return; }
+    el.innerHTML = "";
+    matches.slice(0, 10).forEach(m => {
+      const div = document.createElement("div");
+      div.className = "pk-result";
+      const isMe = m.player1_id === currentUser.id;
+      const meName = isMe ? currentUser.name : m.p2_name;
+      const oppName = isMe ? m.p2_name : m.p1_name;
+      const result = m.winner === "player1" ? (isMe ? "win" : "lose") : m.winner === "player2" ? (isMe ? "lose" : "win") : "draw";
+      const emoji = result === "win" ? "🏆" : result === "lose" ? "💀" : "🤝";
+      const cls = result === "win" ? "win" : result === "lose" ? "lose" : "draw";
+      div.innerHTML = '<span class="' + cls + '">' + emoji + ' ' + meName + '</span> <span class="vs">vs</span> ' + oppName + ' <span style="color:#666;font-size:0.85em;">' + new Date(m.played_at).toLocaleDateString() + '</span>';
+      el.appendChild(div);
+    });
+  } catch(e) { console.warn("pk history refresh failed", e); }
 }
 
 // ---------- 持久化 ----------
@@ -657,418 +1165,8 @@ function loadEvolution() {
   } catch(e) { console.warn("load fail", e); }
 }
 
-// ---------- 自对弈训练系统 ----------
-let trainingActive = false;
-let trainingPaused = false;
-let trainingTotal = 0;
-let trainingStartTime = 0;
-let trainingStats = { aiWins: 0, aiLosses: 0, draws: 0 };
-let trainingGen = null;
-
-// 训练用独立副本（不干扰玩家对局）
-let trainBoard = [];
-let trainMiniWinners = [];
-let trainGlobalBoard = [];
-let trainActiveMiniBoard = -1;
-let trainGameOver = false;
-let trainMoveHistory = [];
-let trainCurrentPlayer = X;
-
-function initTrainBoard() {
-  trainBoard = [];
-  trainMiniWinners = Array(9).fill(EMPTY);
-  trainGlobalBoard = Array(9).fill(EMPTY);
-  trainActiveMiniBoard = -1;
-  trainGameOver = false;
-  trainMoveHistory = [];
-  trainCurrentPlayer = X;
-  for (let mb = 0; mb < 9; mb++) {
-    const mini = [];
-    for (let c = 0; c < 9; c++) mini.push(EMPTY);
-    trainBoard.push(mini);
-  }
-}
-
-function checkTrainMiniWinner(mb) {
-  const b = trainBoard[mb];
-  const lines = [[0,1,2],[3,4,5],[6,7,8],[0,3,6],[1,4,7],[2,5,8],[0,4,8],[2,4,6]];
-  for (const l of lines) {
-    if (b[l[0]] && b[l[0]] === b[l[1]] && b[l[1]] === b[l[2]]) return b[l[0]];
-  }
-  if (b.every(c => c !== EMPTY)) return "draw";
-  return null;
-}
-
-function checkTrainGlobalWinner() {
-  const lines = [[0,1,2],[3,4,5],[6,7,8],[0,3,6],[1,4,7],[2,5,8],[0,4,8],[2,4,6]];
-  for (const l of lines) {
-    if (trainGlobalBoard[l[0]] && trainGlobalBoard[l[0]] === trainGlobalBoard[l[1]] && trainGlobalBoard[l[1]] === trainGlobalBoard[l[2]]) return trainGlobalBoard[l[0]];
-  }
-  if (trainGlobalBoard.every(c => c !== EMPTY)) return "draw";
-  return null;
-}
-
-function getTrainLegalMoves() {
-  const moves = [];
-  if (trainGameOver) return moves;
-  if (trainActiveMiniBoard >= 0 && trainMiniWinners[trainActiveMiniBoard] === EMPTY) {
-    for (let c = 0; c < 9; c++) {
-      if (trainBoard[trainActiveMiniBoard][c] === EMPTY) moves.push({ mb: trainActiveMiniBoard, cell: c });
-    }
-    if (moves.length > 0) return moves;
-  }
-  for (let mb = 0; mb < 9; mb++) {
-    if (trainMiniWinners[mb] !== EMPTY) continue;
-    for (let c = 0; c < 9; c++) {
-      if (trainBoard[mb][c] === EMPTY) moves.push({ mb, cell: c });
-    }
-  }
-  return moves;
-}
-
-function makeTrainMove(mb, cell, player) {
-  trainBoard[mb][cell] = player;
-  trainMoveHistory.push({ mb, cell, player });
-  const result = checkTrainMiniWinner(mb);
-  if (result) {
-    trainMiniWinners[mb] = result;
-    trainGlobalBoard[mb] = (result === X || result === O) ? result : "draw";
-  }
-  trainActiveMiniBoard = cell;
-  if (trainMiniWinners[cell]) trainActiveMiniBoard = -1;
-}
-
-function trainAiScoreMove(mb, cell, player) {
-  const row = Math.floor(cell / 3);
-  const col = cell % 3;
-  let score = 0;
-  const opponent = player === X ? O : X;
-
-  // 1. 立即获胜
-  const testBoard = [...trainBoard[mb]];
-  testBoard[cell] = player;
-  if (checkMiniWinnerCustom(testBoard) === player) score += 1000;
-
-  // 2. 阻止对手获胜
-  const testBoardOpp = [...trainBoard[mb]];
-  testBoardOpp[cell] = opponent;
-  if (checkMiniWinnerCustom(testBoardOpp) === opponent) score += 900;
-
-  // 3. 创建双线威胁
-  const threatCount = countTrainThreats(mb, cell, player);
-  score += threatCount * 150;
-
-  // 4. 阻止对手双线威胁
-  const oppThreatCount = countTrainThreats(mb, cell, opponent);
-  score += oppThreatCount * 100;
-
-  // 5. 小棋盘获胜潜力
-  const miniPotential = evaluateTrainMiniWinPotential(mb, cell, player);
-  score += miniPotential * 50;
-
-  // 6. 控制对手下一步区域
-  const nextMb = cell;
-  if (nextMb >= 0 && nextMb < 9) {
-    if (trainMiniWinners[nextMb] === EMPTY) {
-      const ourAdv = evaluateTrainMiniAdvantage(nextMb, player);
-      const theirAdv = evaluateTrainMiniAdvantage(nextMb, opponent);
-      score += (ourAdv - theirAdv) * 30;
-    } else {
-      score -= 50;
-    }
-  }
-
-  // 7. 进化知识
-  for (const exp of evolution.experience) {
-    if (exp.mb === mb && exp.cell === cell && exp.outcome === "win") score += 20;
-    if (exp.mb === mb && exp.cell === cell && exp.outcome === "loss") score -= 30;
-  }
-  score += evolution.level * 0.5;
-
-  // 8. 位置偏好
-  const posWeight = evolution.knowledge.openingWeights[row][col];
-  score += posWeight * 10;
-
-  // 9. 全局策略
-  if (trainGlobalBoard[mb] === EMPTY) {
-    if (countTrainGlobalThreats(player) > 0) score += 20;
-    if (countTrainGlobalThreats(opponent) > 0) score += 15;
-  }
-
-  // 10. 进化参数修正
-  if (player === O) {
-    // AI (O) 使用进化参数
-    score += evolution.knowledge.aggression * 5;
-    if (row === 0 || row === 2 || col === 0 || col === 2) {
-      score += evolution.knowledge.cornerPreference * 8;
-    }
-    if (cell === 4) {
-      score += evolution.knowledge.centerPreference * 8;
-    }
-  } else {
-    // 对手 (X) 使用略低的参数模拟不同风格
-    score += evolution.knowledge.aggression * 4;
-    if (row === 0 || row === 2 || col === 0 || col === 2) {
-      score += evolution.knowledge.cornerPreference * 6;
-    }
-    if (cell === 4) {
-      score += evolution.knowledge.centerPreference * 6;
-    }
-  }
-
-  return score;
-}
-
-function countTrainThreats(mb, cell, player) {
-  const testBoard = [...trainBoard[mb]];
-  testBoard[cell] = player;
-  const lines = [[0,1,2],[3,4,5],[6,7,8],[0,3,6],[1,4,7],[2,5,8],[0,4,8],[2,4,6]];
-  let threats = 0;
-  for (const l of lines) {
-    const p = l.filter(i => testBoard[i] === player).length;
-    const e = l.filter(i => testBoard[i] === EMPTY).length;
-    if (p === 2 && e === 1) threats++;
-  }
-  return threats;
-}
-
-function evaluateTrainMiniWinPotential(mb, cell, player) {
-  const lines = [[0,1,2],[3,4,5],[6,7,8],[0,3,6],[1,4,7],[2,5,8],[0,4,8],[2,4,6]];
-  let count = 0;
-  for (const l of lines) {
-    if (cell === l[0] || cell === l[1] || cell === l[2]) {
-      const ourCount = l.filter(i => trainBoard[mb][i] === player).length;
-      const emptyCount = l.filter(i => trainBoard[mb][i] === EMPTY).length;
-      const oppCount = l.filter(i => trainBoard[mb][i] !== EMPTY && trainBoard[mb][i] !== player).length;
-      if (emptyCount > 0 && oppCount === 0) count += ourCount + 1;
-    }
-  }
-  return count;
-}
-
-function evaluateTrainMiniAdvantage(mb, player) {
-  if (trainMiniWinners[mb] !== EMPTY) return 0;
-  const lines = [[0,1,2],[3,4,5],[6,7,8],[0,3,6],[1,4,7],[2,5,8],[0,4,8],[2,4,6]];
-  let score = 0;
-  for (const l of lines) {
-    const pCount = l.filter(i => trainBoard[mb][i] === player).length;
-    const eCount = l.filter(i => trainBoard[mb][i] === EMPTY).length;
-    if (pCount > 0 && eCount > 0 && l.filter(i => trainBoard[mb][i] !== EMPTY && trainBoard[mb][i] !== player).length === 0) {
-      score += pCount * pCount;
-    }
-  }
-  return score;
-}
-
-function countTrainGlobalThreats(player) {
-  const lines = [[0,1,2],[3,4,5],[6,7,8],[0,3,6],[1,4,7],[2,5,8],[0,4,8],[2,4,6]];
-  let threats = 0;
-  for (const l of lines) {
-    const pCount = l.filter(i => trainGlobalBoard[i] === player).length;
-    const eCount = l.filter(i => trainGlobalBoard[i] === EMPTY).length;
-    if (pCount === 2 && eCount === 1) threats++;
-  }
-  return threats;
-}
-
-function trainAiSelectMove(moves, player) {
-  const scored = moves.map(m => ({ ...m, score: trainAiScoreMove(m.mb, m.cell, player) }));
-  scored.sort((a, b) => b.score - a.score);
-  const randomness = Math.max(0.01, 0.15 - evolution.level * 0.015);
-  if (Math.random() < randomness) {
-    const idx = Math.floor(Math.random() * Math.min(3, scored.length));
-    return scored[idx];
-  }
-  return scored[0];
-}
-
-function runOneTrainGame() {
-  initTrainBoard();
-  let moveCount = 0;
-  const maxMoves = 81;
-
-  while (!trainGameOver && moveCount < maxMoves) {
-    const moves = getTrainLegalMoves();
-    if (moves.length === 0) break;
-
-    const move = trainAiSelectMove(moves, trainCurrentPlayer);
-    makeTrainMove(move.mb, move.cell, trainCurrentPlayer);
-    moveCount++;
-
-    const winner = checkTrainGlobalWinner();
-    if (winner) {
-      trainGameOver = true;
-      // 记录经验：AI视角（O）
-      const aiWon = winner === O;
-      const aiLost = winner === X;
-      const isDraw = winner === "draw";
-
-      for (const m of trainMoveHistory) {
-        if (m.player === O) {
-          const outcome = aiWon ? "win" : (aiLost ? "loss" : "draw");
-          evolution.experience.push({ mb: m.mb, cell: m.cell, outcome, gameNumber: evolution.totalGames + 1, moveNumber: 0 });
-        }
-      }
-
-      if (aiWon) {
-        evolution.wins++;
-        trainingStats.aiWins++;
-        evolution.knowledge.aggression = Math.min(0.9, evolution.knowledge.aggression + 0.01);
-        evolution.knowledge.globalWeight = Math.min(0.7, evolution.knowledge.globalWeight + 0.005);
-      } else if (aiLost) {
-        evolution.losses++;
-        trainingStats.aiLosses++;
-        evolution.knowledge.aggression = Math.max(0.2, evolution.knowledge.aggression - 0.015);
-        evolution.knowledge.cornerPreference = Math.min(0.9, evolution.knowledge.cornerPreference + 0.03);
-        evolution.knowledge.defenseAwareness = Math.min(0.9, evolution.knowledge.defenseAwareness + 0.02);
-      } else {
-        evolution.draws++;
-        trainingStats.draws++;
-        evolution.knowledge.aggression += 0.005;
-        evolution.knowledge.centerPreference += 0.01;
-      }
-
-      evolution.totalGames++;
-      trainingTotal++;
-
-      // 每 20 局记录一次进化日志
-      if (evolution.totalGames % 20 === 0) {
-        const rate = ((evolution.wins / Math.max(1, evolution.totalGames)) * 100).toFixed(1);
-        evolution.log.push({
-          time: new Date().toLocaleTimeString(),
-          type: "evo",
-          msg: "⚡ 自对弈训练 " + evolution.totalGames + " 局 · 胜率 " + rate + "% · 等级 " + evolution.level + " · 进攻性 " + evolution.knowledge.aggression.toFixed(2),
-          gameNumber: evolution.totalGames
-        });
-      }
-
-      // 每 50 局升级
-      if (evolution.totalGames % 50 === 0) {
-        evolution.level++;
-        evolution.log.push({
-          time: new Date().toLocaleTimeString(),
-          type: "evo",
-          msg: "⬆️ 自对弈进化等级提升至 " + evolution.level + "！策略知识库已更新",
-          gameNumber: evolution.totalGames
-        });
-      }
-
-      // 限制经验池
-      if (evolution.experience.length > 2000) {
-        evolution.experience = evolution.experience.slice(-1500);
-      }
-
-      break;
-    }
-
-    trainCurrentPlayer = trainCurrentPlayer === X ? O : X;
-  }
-
-  if (!trainGameOver) {
-    // 平局（棋盘满）
-    evolution.draws++;
-    trainingStats.draws++;
-    evolution.totalGames++;
-    trainingTotal++;
-    evolution.knowledge.aggression += 0.005;
-    evolution.knowledge.centerPreference += 0.01;
-  }
-}
-
-// 训练批次
-function runTrainingBatch(batchSize) {
-  if (!trainingActive || trainingPaused) return;
-  const start = performance.now();
-  for (let i = 0; i < batchSize; i++) {
-    if (!trainingActive || trainingPaused) break;
-    runOneTrainGame();
-  }
-  const elapsed = (performance.now() - start) / 1000;
-  const speed = batchSize / Math.max(0.001, elapsed);
-
-  // 更新 UI
-  updateTrainUI(speed);
-
-  // 定期保存
-  if (trainingTotal % 50 === 0) {
-    saveEvolution();
-  }
-
-  // 继续下一批
-  if (trainingActive && !trainingPaused) {
-    // 动态调整批次大小：越快批次越大
-    const nextBatch = Math.min(200, Math.max(10, Math.floor(speed * 5)));
-    setTimeout(() => runTrainingBatch(nextBatch), 10);
-  }
-}
-
-function updateTrainUI(speed) {
-  const total = evolution.totalGames;
-  const winRate = total > 0 ? ((evolution.wins / total) * 100).toFixed(1) : "0.0";
-  const drawRate = total > 0 ? ((evolution.draws / total) * 100).toFixed(1) : "0.0";
-
-  document.getElementById("trainCount").textContent = total;
-  document.getElementById("trainWinRate").textContent = winRate + "%";
-  document.getElementById("trainDrawRate").textContent = drawRate + "%";
-  document.getElementById("trainSpeed").textContent = speed ? speed.toFixed(0) : "0";
-
-  // 进度条（目标：1000局）
-  const progress = Math.min(100, (total / 1000) * 100);
-  document.getElementById("trainProgress").style.width = progress + "%";
-
-  // 状态
-  const elapsed = ((Date.now() - trainingStartTime) / 1000 / 60).toFixed(1);
-  document.getElementById("trainStatus").innerHTML =
-    '🏃 训练中 · 已运行 <strong>' + elapsed + '</strong> 分钟 · 速度 <strong>' + (speed ? speed.toFixed(0) : "0") + '</strong> 局/秒';
-
-  // 同步主界面统计
-  updateStats();
-}
-
-function toggleTraining() {
-  const btn = document.getElementById("trainBtn");
-  const panel = document.getElementById("trainPanel");
-
-  if (!trainingActive) {
-    // 启动训练
-    trainingActive = true;
-    trainingPaused = false;
-    trainingTotal = 0;
-    trainingStats = { aiWins: 0, aiLosses: 0, draws: 0 };
-    trainingStartTime = Date.now();
-
-    btn.textContent = "⏸️ 暂停训练";
-    btn.classList.add("active");
-    panel.style.display = "block";
-    document.getElementById("trainStatus").textContent = "🚀 启动中...";
-
-    // 先保存当前状态
-    saveEvolution();
-
-    // 开始训练
-    setTimeout(() => runTrainingBatch(50), 100);
-  } else if (!trainingPaused) {
-    // 暂停
-    trainingPaused = true;
-    btn.textContent = "▶️ 继续训练";
-    btn.classList.remove("active");
-    document.getElementById("trainStatus").textContent = "⏸️ 已暂停 · 已训练 " + evolution.totalGames + " 局";
-    saveEvolution();
-  } else {
-    // 继续
-    trainingPaused = false;
-    btn.textContent = "⏸️ 暂停训练";
-    btn.classList.add("active");
-    document.getElementById("trainStatus").textContent = "🏃 继续训练...";
-    setTimeout(() => runTrainingBatch(50), 100);
-  }
-}
-
 // ---------- UI 控制 ----------
-function startNewGame() {
-  initBoard();
-  render();
-}
+function startNewGame() { initBoard(); render(); }
 
 function toggleEvoPanel() {
   const panel = document.getElementById("evoLog");
@@ -1080,24 +1178,30 @@ function resetEvolution() {
   if (!confirm("确定要重置 AI 的所有进化数据吗？这将清除所有学习成果。")) return;
   evolution = {
     level: 1, totalGames: 0, wins: 0, losses: 0, draws: 0,
-    knowledge: {
-      openingWeights: [[0.5,0.3,0.5],[0.3,1.0,0.3],[0.5,0.3,0.5]],
-      cornerPreference: 0.7, centerPreference: 0.6, globalWeight: 0.4, aggression: 0.5, defenseAwareness: 0.5
-    },
+    knowledge: { openingWeights: [[0.5,0.3,0.5],[0.3,1.0,0.3],[0.5,0.3,0.5]], cornerPreference: 0.7, centerPreference: 0.6, globalWeight: 0.4, aggression: 0.5, defenseAwareness: 0.5 },
     experience: [],
     log: [{ time: new Date().toLocaleTimeString(), type: "evo", msg: "🔄 进化数据已重置，AI 回到初始状态", gameNumber: 0 }]
   };
-  saveEvolution();
-  initBoard();
-  render();
-  renderEvoLog([]);
+  saveEvolution(); initBoard(); render(); renderEvoLog([]);
   document.getElementById("evoLog").style.display = "block";
+}
+
+function showToast(msg) {
+  const existing = document.querySelector(".toast");
+  if (existing) existing.remove();
+  const div = document.createElement("div");
+  div.className = "toast";
+  div.textContent = msg;
+  document.body.appendChild(div);
+  setTimeout(() => div.remove(), 3000);
 }
 
 // ---------- 启动 ----------
 loadEvolution();
 initBoard();
 render();
+updateUserUI();
+if (currentUser) { refreshLeaderboard(); loadFromServer(); refreshPKHistory(); }
 </script>
 </body>
 </html>
