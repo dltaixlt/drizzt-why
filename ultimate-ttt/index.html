@@ -1,0 +1,676 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>终极井字棋 - 自我进化 AI</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    background: linear-gradient(135deg, #0f0c29, #302b63, #24243e);
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: #e0e0e0;
+    padding: 20px;
+  }
+  .container {
+    max-width: 800px;
+    width: 100%;
+    background: rgba(255,255,255,0.05);
+    border-radius: 20px;
+    padding: 30px;
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255,255,255,0.1);
+  }
+  h1 {
+    text-align: center;
+    font-size: 1.6em;
+    margin-bottom: 5px;
+    background: linear-gradient(90deg, #f7971e, #ffd200);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+  .subtitle {
+    text-align: center;
+    font-size: 0.85em;
+    color: #888;
+    margin-bottom: 15px;
+  }
+  .status-bar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 15px;
+    padding: 10px 15px;
+    background: rgba(0,0,0,0.3);
+    border-radius: 10px;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+  .status { font-size: 1em; font-weight: 600; }
+  .status .highlight { color: #ffd700; }
+  .stats {
+    display: flex;
+    gap: 15px;
+    font-size: 0.85em;
+    color: #aaa;
+  }
+  .stats span { white-space: nowrap; }
+  .stats .wins { color: #4caf50; }
+  .stats .losses { color: #f44336; }
+  .stats .draws { color: #ff9800; }
+  .stats .evo { color: #7c4dff; }
+  .board {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 4px;
+    background: rgba(255,255,255,0.15);
+    padding: 4px;
+    border-radius: 12px;
+    aspect-ratio: 1;
+    max-width: 100%;
+  }
+  .mini-board {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 2px;
+    background: rgba(0,0,0,0.3);
+    padding: 3px;
+    border-radius: 6px;
+    aspect-ratio: 1;
+    position: relative;
+  }
+  .mini-board.active {
+    background: rgba(255,215,0,0.15);
+    box-shadow: inset 0 0 15px rgba(255,215,0,0.2);
+  }
+  .mini-board.won-x { background: rgba(76,175,80,0.25); }
+  .mini-board.won-o { background: rgba(244,67,54,0.25); }
+  .mini-board.draw { background: rgba(255,152,0,0.15); }
+  .cell {
+    background: rgba(255,255,255,0.05);
+    border-radius: 3px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 1.2em;
+    font-weight: bold;
+    cursor: pointer;
+    transition: all 0.15s;
+    aspect-ratio: 1;
+    user-select: none;
+  }
+  .cell:hover:not(.taken):not(.disabled) { background: rgba(255,255,255,0.15); }
+  .cell.taken, .cell.disabled { cursor: default; }
+  .cell.x { color: #4caf50; }
+  .cell.o { color: #f44336; }
+  .cell.last-move { background: rgba(255,215,0,0.2); }
+  .mini-board-status {
+    position: absolute; top: 0; left: 0; right: 0; bottom: 0;
+    display: flex; justify-content: center; align-items: center;
+    font-size: 2.5em; font-weight: bold; border-radius: 6px; pointer-events: none;
+  }
+  .mini-board-status.x { color: rgba(76,175,80,0.6); }
+  .mini-board-status.o { color: rgba(244,67,54,0.6); }
+  .mini-board-status.draw { color: rgba(255,152,0,0.5); font-size: 1.6em; }
+  .controls {
+    display: flex; justify-content: center; gap: 12px; margin-top: 15px; flex-wrap: wrap;
+  }
+  button {
+    padding: 10px 24px; border: none; border-radius: 8px;
+    font-size: 0.9em; font-weight: 600; cursor: pointer; transition: all 0.2s;
+  }
+  button:hover { transform: translateY(-1px); }
+  .btn-new { background: linear-gradient(135deg, #667eea, #764ba2); color: white; }
+  .btn-evo { background: linear-gradient(135deg, #f7971e, #ffd200); color: #333; }
+  .btn-reset-evo { background: rgba(244,67,54,0.3); color: #f44336; border: 1px solid rgba(244,67,54,0.4); }
+  .evo-log {
+    margin-top: 15px; background: rgba(0,0,0,0.3); border-radius: 10px;
+    padding: 12px 15px; max-height: 250px; overflow-y: auto;
+    font-size: 0.8em; line-height: 1.5;
+  }
+  .evo-log::-webkit-scrollbar { width: 4px; }
+  .evo-log::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.2); border-radius: 2px; }
+  .evo-log-title { font-weight: 600; color: #7c4dff; margin-bottom: 6px; font-size: 0.9em; }
+  .evo-entry { padding: 3px 0; border-bottom: 1px solid rgba(255,255,255,0.05); }
+  .evo-entry:last-child { border: none; }
+  .evo-entry .time { color: #666; font-size: 0.85em; }
+  .evo-entry .tag { display: inline-block; padding: 1px 6px; border-radius: 4px; font-size: 0.8em; margin-right: 4px; }
+  .tag-evo { background: rgba(124,77,255,0.3); color: #b388ff; }
+  .tag-learn { background: rgba(76,175,80,0.3); color: #81c784; }
+  .tag-mistake { background: rgba(244,67,54,0.3); color: #ef9a9a; }
+  .tag-insight { background: rgba(255,215,0,0.3); color: #ffd54f; }
+  .ai-thinking { display: inline-block; animation: pulse 1s infinite; }
+  @keyframes pulse { 0%,100% { opacity: 1; } 50% { opacity: 0.3; } }
+  @media (max-width: 500px) {
+    .container { padding: 15px; }
+    .cell { font-size: 0.9em; }
+    .mini-board-status { font-size: 1.8em; }
+    .status-bar { flex-direction: column; align-items: stretch; }
+    .stats { flex-wrap: wrap; }
+    h1 { font-size: 1.2em; }
+  }
+</style>
+</head>
+<body>
+<div class="container">
+  <h1>♾️ 终极井字棋</h1>
+  <div class="subtitle">自我进化 AI · 每一步都在学习</div>
+  <div class="status-bar">
+    <div class="status" id="status">🦞 你执 <span class="highlight">X</span>，先手</div>
+    <div class="stats">
+      <span class="wins">🏆 <span id="wins">0</span></span>
+      <span class="losses">💀 <span id="losses">0</span></span>
+      <span class="draws">🤝 <span id="draws">0</span></span>
+      <span class="evo">🧬 等级 <span id="evoLevel">1</span></span>
+    </div>
+  </div>
+  <div class="board" id="board"></div>
+  <div class="controls">
+    <button class="btn-new" onclick="startNewGame()">🔄 新一局</button>
+    <button class="btn-evo" onclick="toggleEvoPanel()">🧬 进化日志</button>
+    <button class="btn-reset-evo" onclick="resetEvolution()">🗑️ 重置进化</button>
+  </div>
+  <div class="evo-log" id="evoLog" style="display:none;">
+    <div class="evo-log-title">🧬 自我进化记录</div>
+    <div id="evoEntries"></div>
+  </div>
+</div>
+<script>
+// ============================================================
+// 终极井字棋 (Ultimate Tic-Tac-Toe) - 自我进化 AI
+// Loop 精神：每下一局 → 复盘 → 学习 → 下一局更强
+// ============================================================
+
+const EMPTY = "";
+const X = "X";
+const O = "O";
+
+let board = [];
+let miniWinners = [];
+let globalBoard = [];
+let currentPlayer = X;
+let activeMiniBoard = -1;
+let gameOver = false;
+let lastMove = null;
+let moveHistory = [];
+
+// ---------- AI 进化系统 ----------
+let evolution = {
+  level: 1,
+  totalGames: 0,
+  wins: 0,
+  losses: 0,
+  draws: 0,
+  knowledge: {
+    openingWeights: [[0.5,0.3,0.5],[0.3,1.0,0.3],[0.5,0.3,0.5]],
+    cornerPreference: 0.7,
+    centerPreference: 0.6,
+    globalWeight: 0.4,
+    aggression: 0.5,
+    defenseAwareness: 0.5
+  },
+  experience: [],
+  log: []
+};
+
+// ---------- Board 工具 ----------
+function initBoard() {
+  board = [];
+  miniWinners = Array(9).fill(EMPTY);
+  globalBoard = Array(9).fill(EMPTY);
+  currentPlayer = X;
+  activeMiniBoard = -1;
+  gameOver = false;
+  lastMove = null;
+  moveHistory = [];
+  for (let mb = 0; mb < 9; mb++) {
+    const mini = [];
+    for (let c = 0; c < 9; c++) mini.push(EMPTY);
+    board.push(mini);
+  }
+}
+
+function checkMiniWinner(mb) {
+  const b = board[mb];
+  const lines = [[0,1,2],[3,4,5],[6,7,8],[0,3,6],[1,4,7],[2,5,8],[0,4,8],[2,4,6]];
+  for (const l of lines) {
+    if (b[l[0]] && b[l[0]] === b[l[1]] && b[l[1]] === b[l[2]]) return b[l[0]];
+  }
+  if (b.every(c => c !== EMPTY)) return "draw";
+  return null;
+}
+
+function checkGlobalWinner() {
+  const lines = [[0,1,2],[3,4,5],[6,7,8],[0,3,6],[1,4,7],[2,5,8],[0,4,8],[2,4,6]];
+  for (const l of lines) {
+    if (globalBoard[l[0]] && globalBoard[l[0]] === globalBoard[l[1]] && globalBoard[l[1]] === globalBoard[l[2]]) return globalBoard[l[0]];
+  }
+  if (globalBoard.every(c => c !== EMPTY)) return "draw";
+  return null;
+}
+
+function getLegalMoves() {
+  const moves = [];
+  if (gameOver) return moves;
+  if (activeMiniBoard >= 0 && miniWinners[activeMiniBoard] === EMPTY) {
+    for (let c = 0; c < 9; c++) {
+      if (board[activeMiniBoard][c] === EMPTY) moves.push({ mb: activeMiniBoard, cell: c });
+    }
+    if (moves.length > 0) return moves;
+  }
+  for (let mb = 0; mb < 9; mb++) {
+    if (miniWinners[mb] !== EMPTY) continue;
+    for (let c = 0; c < 9; c++) {
+      if (board[mb][c] === EMPTY) moves.push({ mb, cell: c });
+    }
+  }
+  return moves;
+}
+
+function makeMove(mb, cell, player) {
+  board[mb][cell] = player;
+  lastMove = { mb, cell };
+  moveHistory.push({ mb, cell, player, gameNumber: evolution.totalGames + 1, moveNumber: moveHistory.length });
+  const result = checkMiniWinner(mb);
+  if (result) {
+    miniWinners[mb] = result;
+    globalBoard[mb] = (result === X || result === O) ? result : "draw";
+  }
+  activeMiniBoard = cell;
+  if (miniWinners[cell]) activeMiniBoard = -1;
+}
+
+// ---------- 渲染 ----------
+function render() {
+  const boardEl = document.getElementById("board");
+  boardEl.innerHTML = "";
+  for (let mb = 0; mb < 9; mb++) {
+    const miniEl = document.createElement("div");
+    miniEl.className = "mini-board";
+    if (!gameOver && !miniWinners[mb] && (activeMiniBoard === -1 || activeMiniBoard === mb)) miniEl.classList.add("active");
+    if (miniWinners[mb] === X) miniEl.classList.add("won-x");
+    else if (miniWinners[mb] === O) miniEl.classList.add("won-o");
+    else if (miniWinners[mb] === "draw") miniEl.classList.add("draw");
+    for (let c = 0; c < 9; c++) {
+      const cell = document.createElement("div");
+      cell.className = "cell";
+      const val = board[mb][c];
+      if (val) { cell.classList.add("taken", val.toLowerCase()); cell.textContent = val === X ? "✕" : "◯"; }
+      if (lastMove && lastMove.mb === mb && lastMove.cell === c) cell.classList.add("last-move");
+      if (miniWinners[mb] || gameOver || currentPlayer !== X) cell.classList.add("disabled");
+      cell.addEventListener("click", (function(m,c){ return function(){ handleCellClick(m,c); }; })(mb,c));
+      miniEl.appendChild(cell);
+    }
+    if (miniWinners[mb]) {
+      const ov = document.createElement("div");
+      ov.className = "mini-board-status";
+      if (miniWinners[mb] === X) { ov.textContent = "✕"; ov.classList.add("x"); }
+      else if (miniWinners[mb] === O) { ov.textContent = "◯"; ov.classList.add("o"); }
+      else if (miniWinners[mb] === "draw") { ov.textContent = "="; ov.classList.add("draw"); }
+      miniEl.appendChild(ov);
+    }
+    boardEl.appendChild(miniEl);
+  }
+  updateStatus();
+  updateStats();
+}
+
+function updateStatus() {
+  const el = document.getElementById("status");
+  if (gameOver) {
+    const w = checkGlobalWinner();
+    if (w === X) el.innerHTML = '🎉 <span class="highlight">你赢了！</span> AI 正在复盘学习...';
+    else if (w === O) el.innerHTML = '💀 <span class="highlight">AI 赢了</span> · 它又变强了一点';
+    else if (w === "draw") el.innerHTML = '🤝 <span class="highlight">平局</span> · 势均力敌';
+    else el.innerHTML = "⚡ 游戏结束";
+  } else if (currentPlayer === X) {
+    const hint = activeMiniBoard >= 0 ? "（请在标记的小棋盘落子）" : "（自由选择小棋盘）";
+    el.innerHTML = '🦞 轮到你 <span class="highlight">✕</span> ' + hint;
+  } else {
+    el.innerHTML = '🤖 AI 思考中 <span class="ai-thinking">...</span>';
+  }
+}
+
+function updateStats() {
+  document.getElementById("wins").textContent = evolution.wins;
+  document.getElementById("losses").textContent = evolution.losses;
+  document.getElementById("draws").textContent = evolution.draws;
+  document.getElementById("evoLevel").textContent = evolution.level;
+}
+
+// ---------- 玩家操作 ----------
+function handleCellClick(mb, cell) {
+  if (gameOver || currentPlayer !== X) return;
+  if (miniWinners[mb]) return;
+  if (activeMiniBoard >= 0 && activeMiniBoard !== mb) return;
+  if (board[mb][cell] !== EMPTY) return;
+  makeMove(mb, cell, X);
+  const winner = checkGlobalWinner();
+  if (winner) {
+    gameOver = true;
+    if (winner === X) evolution.losses++;
+    else if (winner === O) evolution.wins++;
+    else if (winner === "draw") evolution.draws++;
+    evolution.totalGames++;
+    render();
+    afterGameAnalysis();
+    saveEvolution();
+    return;
+  }
+  currentPlayer = O;
+  render();
+  setTimeout(aiMove, 300);
+}
+
+// ---------- AI 核心 ----------
+function aiMove() {
+  if (gameOver || currentPlayer !== O) return;
+  const moves = getLegalMoves();
+  if (moves.length === 0) {
+    gameOver = true;
+    const w = checkGlobalWinner();
+    if (w === X) evolution.losses++;
+    else if (w === O) evolution.wins++;
+    else if (w === "draw") evolution.draws++;
+    evolution.totalGames++;
+    saveEvolution();
+    render();
+    afterGameAnalysis();
+    return;
+  }
+  const move = aiSelectMove(moves);
+  makeMove(move.mb, move.cell, O);
+  const winner = checkGlobalWinner();
+  if (winner) {
+    gameOver = true;
+    if (winner === X) evolution.losses++;
+    else if (winner === O) evolution.wins++;
+    else if (winner === "draw") evolution.draws++;
+    evolution.totalGames++;
+    render();
+    afterGameAnalysis();
+    saveEvolution();
+    return;
+  }
+  currentPlayer = X;
+  render();
+}
+
+function aiSelectMove(moves) {
+  const scored = moves.map(m => ({ ...m, score: aiScoreMove(m) }));
+  scored.sort((a, b) => b.score - a.score);
+  const randomness = Math.max(0.02, 0.2 - evolution.level * 0.02);
+  if (Math.random() < randomness) {
+    const idx = Math.floor(Math.random() * Math.min(3, scored.length));
+    return scored[idx];
+  }
+  return scored[0];
+}
+
+function aiScoreMove(move) {
+  const { mb, cell } = move;
+  const row = Math.floor(cell / 3);
+  const col = cell % 3;
+  let score = 0;
+
+  // 1. 立即获胜
+  const testBoard = [...board[mb]];
+  testBoard[cell] = O;
+  if (checkMiniWinnerCustom(testBoard) === O) score += 1000;
+
+  // 2. 阻止玩家获胜
+  const testBoardX = [...board[mb]];
+  testBoardX[cell] = X;
+  if (checkMiniWinnerCustom(testBoardX) === X) score += 900;
+
+  // 3. 创建双线威胁
+  const threatCount = countThreats(mb, cell, O);
+  score += threatCount * 150;
+
+  // 4. 阻止玩家双线威胁
+  const playerThreatCount = countThreats(mb, cell, X);
+  score += playerThreatCount * 100;
+
+  // 5. 小棋盘获胜潜力
+  const miniPotential = evaluateMiniWinPotential(mb, cell);
+  score += miniPotential * 50;
+
+  // 6. 控制对手下一步区域
+  const nextMb = cell;
+  if (nextMb >= 0 && nextMb < 9) {
+    if (miniWinners[nextMb] === EMPTY) {
+      const ourAdv = evaluateMiniAdvantage(nextMb, O);
+      const theirAdv = evaluateMiniAdvantage(nextMb, X);
+      score += (ourAdv - theirAdv) * 30;
+    } else {
+      score -= 50;
+    }
+  }
+
+  // 7. 进化知识
+  score += applyEvolutionKnowledge(mb, cell);
+
+  // 8. 位置偏好
+  const posWeight = evolution.knowledge.openingWeights[row][col];
+  score += posWeight * 10;
+
+  // 9. 全局策略
+  if (globalBoard[mb] === EMPTY) {
+    if (countGlobalThreats(O) > 0) score += 20;
+    if (countGlobalThreats(X) > 0) score += 15;
+  }
+
+  return score;
+}
+
+function checkMiniWinnerCustom(b) {
+  const lines = [[0,1,2],[3,4,5],[6,7,8],[0,3,6],[1,4,7],[2,5,8],[0,4,8],[2,4,6]];
+  for (const l of lines) {
+    if (b[l[0]] && b[l[0]] === b[l[1]] && b[l[1]] === b[l[2]]) return b[l[0]];
+  }
+  return null;
+}
+
+function countThreats(mb, cell, player) {
+  const testBoard = [...board[mb]];
+  testBoard[cell] = player;
+  const lines = [[0,1,2],[3,4,5],[6,7,8],[0,3,6],[1,4,7],[2,5,8],[0,4,8],[2,4,6]];
+  let threats = 0;
+  for (const l of lines) {
+    const p = l.filter(i => testBoard[i] === player).length;
+    const e = l.filter(i => testBoard[i] === EMPTY).length;
+    if (p === 2 && e === 1) threats++;
+  }
+  return threats;
+}
+
+function evaluateMiniWinPotential(mb, cell) {
+  const lines = [[0,1,2],[3,4,5],[6,7,8],[0,3,6],[1,4,7],[2,5,8],[0,4,8],[2,4,6]];
+  let count = 0;
+  for (const l of lines) {
+    if (cell === l[0] || cell === l[1] || cell === l[2]) {
+      const ourCount = l.filter(i => board[mb][i] === O).length;
+      const emptyCount = l.filter(i => board[mb][i] === EMPTY).length;
+      const theirCount = l.filter(i => board[mb][i] === X).length;
+      if (emptyCount > 0 && theirCount === 0) count += ourCount + 1;
+    }
+  }
+  return count;
+}
+
+function evaluateMiniAdvantage(mb, player) {
+  if (miniWinners[mb] !== EMPTY) return 0;
+  const lines = [[0,1,2],[3,4,5],[6,7,8],[0,3,6],[1,4,7],[2,5,8],[0,4,8],[2,4,6]];
+  let score = 0;
+  for (const l of lines) {
+    const pCount = l.filter(i => board[mb][i] === player).length;
+    const eCount = l.filter(i => board[mb][i] === EMPTY).length;
+    if (pCount > 0 && eCount > 0 && l.filter(i => board[mb][i] !== EMPTY && board[mb][i] !== player).length === 0) {
+      score += pCount * pCount;
+    }
+  }
+  return score;
+}
+
+function countGlobalThreats(player) {
+  const lines = [[0,1,2],[3,4,5],[6,7,8],[0,3,6],[1,4,7],[2,5,8],[0,4,8],[2,4,6]];
+  let threats = 0;
+  for (const l of lines) {
+    const pCount = l.filter(i => globalBoard[i] === player).length;
+    const eCount = l.filter(i => globalBoard[i] === EMPTY).length;
+    if (pCount === 2 && eCount === 1) threats++;
+  }
+  return threats;
+}
+
+function applyEvolutionKnowledge(mb, cell) {
+  let score = 0;
+  for (const exp of evolution.experience) {
+    if (exp.mb === mb && exp.cell === cell && exp.outcome === "win") score += 20;
+    if (exp.mb === mb && exp.cell === cell && exp.outcome === "loss") score -= 30;
+  }
+  score += evolution.level * 0.5;
+  return score;
+}
+
+// ---------- 赛后复盘与进化 ----------
+function afterGameAnalysis() {
+  const winner = checkGlobalWinner();
+  const aiWon = winner === O;
+  const aiLost = winner === X;
+  const isDraw = winner === "draw";
+  let evoMessages = [];
+
+  for (let i = 0; i < moveHistory.length; i++) {
+    const m = moveHistory[i];
+    if (m.player === O) {
+      const outcome = aiWon ? "win" : (aiLost ? "loss" : "draw");
+      evolution.experience.push({ mb: m.mb, cell: m.cell, outcome, gameNumber: evolution.totalGames, moveNumber: i });
+    }
+  }
+  if (evolution.experience.length > 1000) evolution.experience = evolution.experience.slice(-800);
+
+  if (aiWon) {
+    evolution.knowledge.aggression = Math.min(0.9, evolution.knowledge.aggression + 0.02);
+    evolution.knowledge.globalWeight = Math.min(0.7, evolution.knowledge.globalWeight + 0.01);
+    evoMessages.push({ type: "evo", msg: "🏆 第 " + evolution.totalGames + " 局获胜 · 进攻性提升至 " + evolution.knowledge.aggression.toFixed(2) });
+    const aiMoves = moveHistory.filter(m => m.player === O);
+    if (aiMoves.length > 0) {
+      const lastAi = aiMoves[aiMoves.length - 1];
+      evoMessages.push({ type: "learn", msg: "📌 关键落子: 小棋盘 " + lastAi.mb + " 位置 " + lastAi.cell + " → 标记为有效策略" });
+    }
+  }
+
+  if (aiLost) {
+    evolution.knowledge.aggression = Math.max(0.2, evolution.knowledge.aggression - 0.03);
+    evolution.knowledge.cornerPreference = Math.min(0.9, evolution.knowledge.cornerPreference + 0.05);
+    evolution.knowledge.defenseAwareness = Math.min(0.9, evolution.knowledge.defenseAwareness + 0.03);
+    evoMessages.push({ type: "mistake", msg: "💀 第 " + evolution.totalGames + " 局失败 · 防守意识提升至 " + evolution.knowledge.defenseAwareness.toFixed(2) + "，角落偏好增至 " + evolution.knowledge.cornerPreference.toFixed(2) });
+    const aiMoves = moveHistory.filter(m => m.player === O);
+    for (const m of aiMoves) {
+      const tb = [...board[m.mb]];
+      tb[m.cell] = X;
+      if (checkMiniWinnerCustom(tb) === X) {
+        evoMessages.push({ type: "mistake", msg: "⚠️ 失误分析: 小棋盘 " + m.mb + " 位置 " + m.cell + " 未能阻止玩家连线 → 标记为高风险" });
+        break;
+      }
+    }
+  }
+
+  if (isDraw) {
+    evolution.knowledge.aggression += 0.01;
+    evolution.knowledge.centerPreference += 0.02;
+    evoMessages.push({ type: "insight", msg: "🤝 第 " + evolution.totalGames + " 局平局 · 中心控制偏好提升至 " + evolution.knowledge.centerPreference.toFixed(2) });
+  }
+
+  if (evolution.totalGames % 5 === 0 && evolution.totalGames > 0) {
+    evolution.level++;
+    evoMessages.push({ type: "evo", msg: "⬆️ 进化等级提升至 " + evolution.level + "！策略知识库已更新" });
+  }
+
+  for (const m of evoMessages) {
+    evolution.log.push({ time: new Date().toLocaleTimeString(), type: m.type, msg: m.msg, gameNumber: evolution.totalGames });
+  }
+  renderEvoLog(evoMessages);
+}
+
+function renderEvoLog(newEntries) {
+  const entries = document.getElementById("evoEntries");
+  const fragment = document.createDocumentFragment();
+  const logs = evolution.log.slice(-50).reverse();
+  for (const entry of logs) {
+    const div = document.createElement("div");
+    div.className = "evo-entry";
+    const tagMap = { evo: "🧬进化", learn: "📖学习", mistake: "⚠️失误", insight: "💡洞察" };
+    div.innerHTML = '<span class="time">#' + entry.gameNumber + '</span> <span class="tag tag-' + entry.type + '">' + (tagMap[entry.type] || entry.type) + '</span> ' + entry.msg;
+    fragment.appendChild(div);
+  }
+  entries.innerHTML = "";
+  entries.appendChild(fragment);
+}
+
+// ---------- 持久化 ----------
+function saveEvolution() {
+  try { localStorage.setItem("ultimate-ttt-evolution", JSON.stringify(evolution)); } catch(e) { console.warn("save fail", e); }
+}
+
+function loadEvolution() {
+  try {
+    const data = localStorage.getItem("ultimate-ttt-evolution");
+    if (data) {
+      const loaded = JSON.parse(data);
+      evolution = { ...evolution, ...loaded };
+      if (!evolution.knowledge) evolution.knowledge = {};
+      if (!evolution.knowledge.openingWeights) evolution.knowledge.openingWeights = [[0.5,0.3,0.5],[0.3,1.0,0.3],[0.5,0.3,0.5]];
+      if (evolution.knowledge.cornerPreference === undefined) evolution.knowledge.cornerPreference = 0.7;
+      if (evolution.knowledge.centerPreference === undefined) evolution.knowledge.centerPreference = 0.6;
+      if (evolution.knowledge.globalWeight === undefined) evolution.knowledge.globalWeight = 0.4;
+      if (evolution.knowledge.aggression === undefined) evolution.knowledge.aggression = 0.5;
+      if (evolution.knowledge.defenseAwareness === undefined) evolution.knowledge.defenseAwareness = 0.5;
+      if (!evolution.log) evolution.log = [];
+      if (!evolution.experience) evolution.experience = [];
+    }
+  } catch(e) { console.warn("load fail", e); }
+}
+
+// ---------- UI 控制 ----------
+function startNewGame() {
+  initBoard();
+  render();
+}
+
+function toggleEvoPanel() {
+  const panel = document.getElementById("evoLog");
+  panel.style.display = panel.style.display === "none" ? "block" : "none";
+  if (panel.style.display === "block") renderEvoLog([]);
+}
+
+function resetEvolution() {
+  if (!confirm("确定要重置 AI 的所有进化数据吗？这将清除所有学习成果。")) return;
+  evolution = {
+    level: 1, totalGames: 0, wins: 0, losses: 0, draws: 0,
+    knowledge: {
+      openingWeights: [[0.5,0.3,0.5],[0.3,1.0,0.3],[0.5,0.3,0.5]],
+      cornerPreference: 0.7, centerPreference: 0.6, globalWeight: 0.4, aggression: 0.5, defenseAwareness: 0.5
+    },
+    experience: [],
+    log: [{ time: new Date().toLocaleTimeString(), type: "evo", msg: "🔄 进化数据已重置，AI 回到初始状态", gameNumber: 0 }]
+  };
+  saveEvolution();
+  initBoard();
+  render();
+  renderEvoLog([]);
+  document.getElementById("evoLog").style.display = "block";
+}
+
+// ---------- 启动 ----------
+loadEvolution();
+initBoard();
+render();
+</script>
+</body>
+</html>
