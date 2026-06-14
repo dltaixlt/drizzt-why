@@ -306,7 +306,10 @@
 // 终极井字棋 - 自我进化 AI + 云同步 + PK + 排行榜
 // ============================================================
 
-const API_BASE = "https://ultimate-ttt-server.onrender.com";
+// API 服务器地址 - 部署时修改这里
+const API_BASE = window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1"
+  ? "http://localhost:3000"
+  : "https://ultimate-ttt-server.onrender.com"; // ← 部署后端后修改这里
 const EMPTY = "";
 const X = "X";
 const O = "O";

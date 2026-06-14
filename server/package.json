@@ -1,0 +1,15 @@
+{
+  "name": "ultimate-ttt-server",
+  "version": "1.0.0",
+  "description": "Ultimate Tic-Tac-Toe Server",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "express": "^5.0.0",
+    "cors": "^2.8.6",
+    "uuid": "^14.0.0",
+    "better-sqlite3": "^12.0.0"
+  }
+}
