@@ -127,6 +127,10 @@
   .btn-new { background: linear-gradient(135deg, #667eea, #764ba2); color: white; }
   .btn-evo { background: linear-gradient(135deg, #f7971e, #ffd200); color: #333; }
   .btn-reset-evo { background: rgba(244,67,54,0.3); color: #f44336; border: 1px solid rgba(244,67,54,0.4); }
+  .btn-train { background: linear-gradient(135deg, #00bcd4, #009688); color: white; }
+  .btn-train.active { background: linear-gradient(135deg, #f44336, #e91e63); animation: pulse-btn 1s infinite; }
+  @keyframes pulse-btn { 0%,100% { opacity: 1; } 50% { opacity: 0.6; } }
+  .btn-train:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
   .evo-log {
     margin-top: 15px; background: rgba(0,0,0,0.3); border-radius: 10px;
     padding: 12px 15px; max-height: 250px; overflow-y: auto;
@@ -171,12 +175,28 @@
   <div class="board" id="board"></div>
   <div class="controls">
     <button class="btn-new" onclick="startNewGame()">🔄 新一局</button>
+    <button class="btn-train" id="trainBtn" onclick="toggleTraining()">⚡ 自对弈训练</button>
     <button class="btn-evo" onclick="toggleEvoPanel()">🧬 进化日志</button>
     <button class="btn-reset-evo" onclick="resetEvolution()">🗑️ 重置进化</button>
   </div>
   <div class="evo-log" id="evoLog" style="display:none;">
     <div class="evo-log-title">🧬 自我进化记录</div>
     <div id="evoEntries"></div>
+  </div>
+  <div class="train-panel" id="trainPanel" style="display:none; margin-top:10px; background:rgba(0,188,212,0.1); border-radius:10px; padding:12px 15px;">
+    <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px;">
+      <span style="font-weight:600; color:#00bcd4;">⚡ 自对弈训练</span>
+      <span id="trainStatus" style="font-size:0.85em; color:#aaa;">就绪</span>
+    </div>
+    <div style="margin-top:8px; display:flex; gap:15px; font-size:0.85em; flex-wrap:wrap;">
+      <span>已训练: <strong id="trainCount" style="color:#00bcd4;">0</strong> 局</span>
+      <span>🏆 AI胜率: <strong id="trainWinRate" style="color:#4caf50;">0%</strong></span>
+      <span>🤝 平局率: <strong id="trainDrawRate" style="color:#ff9800;">0%</strong></span>
+      <span>⚡ 速度: <strong id="trainSpeed" style="color:#aaa;">0</strong> 局/秒</span>
+    </div>
+    <div style="margin-top:8px; height:4px; background:rgba(0,0,0,0.3); border-radius:2px; overflow:hidden;">
+      <div id="trainProgress" style="height:100%; width:0%; background:linear-gradient(90deg, #00bcd4, #009688); border-radius:2px; transition:width 0.3s;"></div>
+    </div>
   </div>
 </div>
 <script>
@@ -635,6 +655,413 @@ function loadEvolution() {
       if (!evolution.experience) evolution.experience = [];
     }
   } catch(e) { console.warn("load fail", e); }
+}
+
+// ---------- 自对弈训练系统 ----------
+let trainingActive = false;
+let trainingPaused = false;
+let trainingTotal = 0;
+let trainingStartTime = 0;
+let trainingStats = { aiWins: 0, aiLosses: 0, draws: 0 };
+let trainingGen = null;
+
+// 训练用独立副本（不干扰玩家对局）
+let trainBoard = [];
+let trainMiniWinners = [];
+let trainGlobalBoard = [];
+let trainActiveMiniBoard = -1;
+let trainGameOver = false;
+let trainMoveHistory = [];
+let trainCurrentPlayer = X;
+
+function initTrainBoard() {
+  trainBoard = [];
+  trainMiniWinners = Array(9).fill(EMPTY);
+  trainGlobalBoard = Array(9).fill(EMPTY);
+  trainActiveMiniBoard = -1;
+  trainGameOver = false;
+  trainMoveHistory = [];
+  trainCurrentPlayer = X;
+  for (let mb = 0; mb < 9; mb++) {
+    const mini = [];
+    for (let c = 0; c < 9; c++) mini.push(EMPTY);
+    trainBoard.push(mini);
+  }
+}
+
+function checkTrainMiniWinner(mb) {
+  const b = trainBoard[mb];
+  const lines = [[0,1,2],[3,4,5],[6,7,8],[0,3,6],[1,4,7],[2,5,8],[0,4,8],[2,4,6]];
+  for (const l of lines) {
+    if (b[l[0]] && b[l[0]] === b[l[1]] && b[l[1]] === b[l[2]]) return b[l[0]];
+  }
+  if (b.every(c => c !== EMPTY)) return "draw";
+  return null;
+}
+
+function checkTrainGlobalWinner() {
+  const lines = [[0,1,2],[3,4,5],[6,7,8],[0,3,6],[1,4,7],[2,5,8],[0,4,8],[2,4,6]];
+  for (const l of lines) {
+    if (trainGlobalBoard[l[0]] && trainGlobalBoard[l[0]] === trainGlobalBoard[l[1]] && trainGlobalBoard[l[1]] === trainGlobalBoard[l[2]]) return trainGlobalBoard[l[0]];
+  }
+  if (trainGlobalBoard.every(c => c !== EMPTY)) return "draw";
+  return null;
+}
+
+function getTrainLegalMoves() {
+  const moves = [];
+  if (trainGameOver) return moves;
+  if (trainActiveMiniBoard >= 0 && trainMiniWinners[trainActiveMiniBoard] === EMPTY) {
+    for (let c = 0; c < 9; c++) {
+      if (trainBoard[trainActiveMiniBoard][c] === EMPTY) moves.push({ mb: trainActiveMiniBoard, cell: c });
+    }
+    if (moves.length > 0) return moves;
+  }
+  for (let mb = 0; mb < 9; mb++) {
+    if (trainMiniWinners[mb] !== EMPTY) continue;
+    for (let c = 0; c < 9; c++) {
+      if (trainBoard[mb][c] === EMPTY) moves.push({ mb, cell: c });
+    }
+  }
+  return moves;
+}
+
+function makeTrainMove(mb, cell, player) {
+  trainBoard[mb][cell] = player;
+  trainMoveHistory.push({ mb, cell, player });
+  const result = checkTrainMiniWinner(mb);
+  if (result) {
+    trainMiniWinners[mb] = result;
+    trainGlobalBoard[mb] = (result === X || result === O) ? result : "draw";
+  }
+  trainActiveMiniBoard = cell;
+  if (trainMiniWinners[cell]) trainActiveMiniBoard = -1;
+}
+
+function trainAiScoreMove(mb, cell, player) {
+  const row = Math.floor(cell / 3);
+  const col = cell % 3;
+  let score = 0;
+  const opponent = player === X ? O : X;
+
+  // 1. 立即获胜
+  const testBoard = [...trainBoard[mb]];
+  testBoard[cell] = player;
+  if (checkMiniWinnerCustom(testBoard) === player) score += 1000;
+
+  // 2. 阻止对手获胜
+  const testBoardOpp = [...trainBoard[mb]];
+  testBoardOpp[cell] = opponent;
+  if (checkMiniWinnerCustom(testBoardOpp) === opponent) score += 900;
+
+  // 3. 创建双线威胁
+  const threatCount = countTrainThreats(mb, cell, player);
+  score += threatCount * 150;
+
+  // 4. 阻止对手双线威胁
+  const oppThreatCount = countTrainThreats(mb, cell, opponent);
+  score += oppThreatCount * 100;
+
+  // 5. 小棋盘获胜潜力
+  const miniPotential = evaluateTrainMiniWinPotential(mb, cell, player);
+  score += miniPotential * 50;
+
+  // 6. 控制对手下一步区域
+  const nextMb = cell;
+  if (nextMb >= 0 && nextMb < 9) {
+    if (trainMiniWinners[nextMb] === EMPTY) {
+      const ourAdv = evaluateTrainMiniAdvantage(nextMb, player);
+      const theirAdv = evaluateTrainMiniAdvantage(nextMb, opponent);
+      score += (ourAdv - theirAdv) * 30;
+    } else {
+      score -= 50;
+    }
+  }
+
+  // 7. 进化知识
+  for (const exp of evolution.experience) {
+    if (exp.mb === mb && exp.cell === cell && exp.outcome === "win") score += 20;
+    if (exp.mb === mb && exp.cell === cell && exp.outcome === "loss") score -= 30;
+  }
+  score += evolution.level * 0.5;
+
+  // 8. 位置偏好
+  const posWeight = evolution.knowledge.openingWeights[row][col];
+  score += posWeight * 10;
+
+  // 9. 全局策略
+  if (trainGlobalBoard[mb] === EMPTY) {
+    if (countTrainGlobalThreats(player) > 0) score += 20;
+    if (countTrainGlobalThreats(opponent) > 0) score += 15;
+  }
+
+  // 10. 进化参数修正
+  if (player === O) {
+    // AI (O) 使用进化参数
+    score += evolution.knowledge.aggression * 5;
+    if (row === 0 || row === 2 || col === 0 || col === 2) {
+      score += evolution.knowledge.cornerPreference * 8;
+    }
+    if (cell === 4) {
+      score += evolution.knowledge.centerPreference * 8;
+    }
+  } else {
+    // 对手 (X) 使用略低的参数模拟不同风格
+    score += evolution.knowledge.aggression * 4;
+    if (row === 0 || row === 2 || col === 0 || col === 2) {
+      score += evolution.knowledge.cornerPreference * 6;
+    }
+    if (cell === 4) {
+      score += evolution.knowledge.centerPreference * 6;
+    }
+  }
+
+  return score;
+}
+
+function countTrainThreats(mb, cell, player) {
+  const testBoard = [...trainBoard[mb]];
+  testBoard[cell] = player;
+  const lines = [[0,1,2],[3,4,5],[6,7,8],[0,3,6],[1,4,7],[2,5,8],[0,4,8],[2,4,6]];
+  let threats = 0;
+  for (const l of lines) {
+    const p = l.filter(i => testBoard[i] === player).length;
+    const e = l.filter(i => testBoard[i] === EMPTY).length;
+    if (p === 2 && e === 1) threats++;
+  }
+  return threats;
+}
+
+function evaluateTrainMiniWinPotential(mb, cell, player) {
+  const lines = [[0,1,2],[3,4,5],[6,7,8],[0,3,6],[1,4,7],[2,5,8],[0,4,8],[2,4,6]];
+  let count = 0;
+  for (const l of lines) {
+    if (cell === l[0] || cell === l[1] || cell === l[2]) {
+      const ourCount = l.filter(i => trainBoard[mb][i] === player).length;
+      const emptyCount = l.filter(i => trainBoard[mb][i] === EMPTY).length;
+      const oppCount = l.filter(i => trainBoard[mb][i] !== EMPTY && trainBoard[mb][i] !== player).length;
+      if (emptyCount > 0 && oppCount === 0) count += ourCount + 1;
+    }
+  }
+  return count;
+}
+
+function evaluateTrainMiniAdvantage(mb, player) {
+  if (trainMiniWinners[mb] !== EMPTY) return 0;
+  const lines = [[0,1,2],[3,4,5],[6,7,8],[0,3,6],[1,4,7],[2,5,8],[0,4,8],[2,4,6]];
+  let score = 0;
+  for (const l of lines) {
+    const pCount = l.filter(i => trainBoard[mb][i] === player).length;
+    const eCount = l.filter(i => trainBoard[mb][i] === EMPTY).length;
+    if (pCount > 0 && eCount > 0 && l.filter(i => trainBoard[mb][i] !== EMPTY && trainBoard[mb][i] !== player).length === 0) {
+      score += pCount * pCount;
+    }
+  }
+  return score;
+}
+
+function countTrainGlobalThreats(player) {
+  const lines = [[0,1,2],[3,4,5],[6,7,8],[0,3,6],[1,4,7],[2,5,8],[0,4,8],[2,4,6]];
+  let threats = 0;
+  for (const l of lines) {
+    const pCount = l.filter(i => trainGlobalBoard[i] === player).length;
+    const eCount = l.filter(i => trainGlobalBoard[i] === EMPTY).length;
+    if (pCount === 2 && eCount === 1) threats++;
+  }
+  return threats;
+}
+
+function trainAiSelectMove(moves, player) {
+  const scored = moves.map(m => ({ ...m, score: trainAiScoreMove(m.mb, m.cell, player) }));
+  scored.sort((a, b) => b.score - a.score);
+  const randomness = Math.max(0.01, 0.15 - evolution.level * 0.015);
+  if (Math.random() < randomness) {
+    const idx = Math.floor(Math.random() * Math.min(3, scored.length));
+    return scored[idx];
+  }
+  return scored[0];
+}
+
+function runOneTrainGame() {
+  initTrainBoard();
+  let moveCount = 0;
+  const maxMoves = 81;
+
+  while (!trainGameOver && moveCount < maxMoves) {
+    const moves = getTrainLegalMoves();
+    if (moves.length === 0) break;
+
+    const move = trainAiSelectMove(moves, trainCurrentPlayer);
+    makeTrainMove(move.mb, move.cell, trainCurrentPlayer);
+    moveCount++;
+
+    const winner = checkTrainGlobalWinner();
+    if (winner) {
+      trainGameOver = true;
+      // 记录经验：AI视角（O）
+      const aiWon = winner === O;
+      const aiLost = winner === X;
+      const isDraw = winner === "draw";
+
+      for (const m of trainMoveHistory) {
+        if (m.player === O) {
+          const outcome = aiWon ? "win" : (aiLost ? "loss" : "draw");
+          evolution.experience.push({ mb: m.mb, cell: m.cell, outcome, gameNumber: evolution.totalGames + 1, moveNumber: 0 });
+        }
+      }
+
+      if (aiWon) {
+        evolution.wins++;
+        trainingStats.aiWins++;
+        evolution.knowledge.aggression = Math.min(0.9, evolution.knowledge.aggression + 0.01);
+        evolution.knowledge.globalWeight = Math.min(0.7, evolution.knowledge.globalWeight + 0.005);
+      } else if (aiLost) {
+        evolution.losses++;
+        trainingStats.aiLosses++;
+        evolution.knowledge.aggression = Math.max(0.2, evolution.knowledge.aggression - 0.015);
+        evolution.knowledge.cornerPreference = Math.min(0.9, evolution.knowledge.cornerPreference + 0.03);
+        evolution.knowledge.defenseAwareness = Math.min(0.9, evolution.knowledge.defenseAwareness + 0.02);
+      } else {
+        evolution.draws++;
+        trainingStats.draws++;
+        evolution.knowledge.aggression += 0.005;
+        evolution.knowledge.centerPreference += 0.01;
+      }
+
+      evolution.totalGames++;
+      trainingTotal++;
+
+      // 每 20 局记录一次进化日志
+      if (evolution.totalGames % 20 === 0) {
+        const rate = ((evolution.wins / Math.max(1, evolution.totalGames)) * 100).toFixed(1);
+        evolution.log.push({
+          time: new Date().toLocaleTimeString(),
+          type: "evo",
+          msg: "⚡ 自对弈训练 " + evolution.totalGames + " 局 · 胜率 " + rate + "% · 等级 " + evolution.level + " · 进攻性 " + evolution.knowledge.aggression.toFixed(2),
+          gameNumber: evolution.totalGames
+        });
+      }
+
+      // 每 50 局升级
+      if (evolution.totalGames % 50 === 0) {
+        evolution.level++;
+        evolution.log.push({
+          time: new Date().toLocaleTimeString(),
+          type: "evo",
+          msg: "⬆️ 自对弈进化等级提升至 " + evolution.level + "！策略知识库已更新",
+          gameNumber: evolution.totalGames
+        });
+      }
+
+      // 限制经验池
+      if (evolution.experience.length > 2000) {
+        evolution.experience = evolution.experience.slice(-1500);
+      }
+
+      break;
+    }
+
+    trainCurrentPlayer = trainCurrentPlayer === X ? O : X;
+  }
+
+  if (!trainGameOver) {
+    // 平局（棋盘满）
+    evolution.draws++;
+    trainingStats.draws++;
+    evolution.totalGames++;
+    trainingTotal++;
+    evolution.knowledge.aggression += 0.005;
+    evolution.knowledge.centerPreference += 0.01;
+  }
+}
+
+// 训练批次
+function runTrainingBatch(batchSize) {
+  if (!trainingActive || trainingPaused) return;
+  const start = performance.now();
+  for (let i = 0; i < batchSize; i++) {
+    if (!trainingActive || trainingPaused) break;
+    runOneTrainGame();
+  }
+  const elapsed = (performance.now() - start) / 1000;
+  const speed = batchSize / Math.max(0.001, elapsed);
+
+  // 更新 UI
+  updateTrainUI(speed);
+
+  // 定期保存
+  if (trainingTotal % 50 === 0) {
+    saveEvolution();
+  }
+
+  // 继续下一批
+  if (trainingActive && !trainingPaused) {
+    // 动态调整批次大小：越快批次越大
+    const nextBatch = Math.min(200, Math.max(10, Math.floor(speed * 5)));
+    setTimeout(() => runTrainingBatch(nextBatch), 10);
+  }
+}
+
+function updateTrainUI(speed) {
+  const total = evolution.totalGames;
+  const winRate = total > 0 ? ((evolution.wins / total) * 100).toFixed(1) : "0.0";
+  const drawRate = total > 0 ? ((evolution.draws / total) * 100).toFixed(1) : "0.0";
+
+  document.getElementById("trainCount").textContent = total;
+  document.getElementById("trainWinRate").textContent = winRate + "%";
+  document.getElementById("trainDrawRate").textContent = drawRate + "%";
+  document.getElementById("trainSpeed").textContent = speed ? speed.toFixed(0) : "0";
+
+  // 进度条（目标：1000局）
+  const progress = Math.min(100, (total / 1000) * 100);
+  document.getElementById("trainProgress").style.width = progress + "%";
+
+  // 状态
+  const elapsed = ((Date.now() - trainingStartTime) / 1000 / 60).toFixed(1);
+  document.getElementById("trainStatus").innerHTML =
+    '🏃 训练中 · 已运行 <strong>' + elapsed + '</strong> 分钟 · 速度 <strong>' + (speed ? speed.toFixed(0) : "0") + '</strong> 局/秒';
+
+  // 同步主界面统计
+  updateStats();
+}
+
+function toggleTraining() {
+  const btn = document.getElementById("trainBtn");
+  const panel = document.getElementById("trainPanel");
+
+  if (!trainingActive) {
+    // 启动训练
+    trainingActive = true;
+    trainingPaused = false;
+    trainingTotal = 0;
+    trainingStats = { aiWins: 0, aiLosses: 0, draws: 0 };
+    trainingStartTime = Date.now();
+
+    btn.textContent = "⏸️ 暂停训练";
+    btn.classList.add("active");
+    panel.style.display = "block";
+    document.getElementById("trainStatus").textContent = "🚀 启动中...";
+
+    // 先保存当前状态
+    saveEvolution();
+
+    // 开始训练
+    setTimeout(() => runTrainingBatch(50), 100);
+  } else if (!trainingPaused) {
+    // 暂停
+    trainingPaused = true;
+    btn.textContent = "▶️ 继续训练";
+    btn.classList.remove("active");
+    document.getElementById("trainStatus").textContent = "⏸️ 已暂停 · 已训练 " + evolution.totalGames + " 局";
+    saveEvolution();
+  } else {
+    // 继续
+    trainingPaused = false;
+    btn.textContent = "⏸️ 暂停训练";
+    btn.classList.add("active");
+    document.getElementById("trainStatus").textContent = "🏃 继续训练...";
+    setTimeout(() => runTrainingBatch(50), 100);
+  }
 }
 
 // ---------- UI 控制 ----------
